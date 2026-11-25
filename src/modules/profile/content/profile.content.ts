@@ -12,18 +12,21 @@ const PLAYS_STORED = numberFactSchema.parse({
 	source: 'rigtch.fm production database',
 	checkedOn: '2026-11-25',
 })
+
 const QUEUES = numberFactSchema.parse({
 	value: 17,
 	label: 'queues',
 	source: 'rigtch.fm API source code',
 	checkedOn: '2026-11-25',
 })
+
 const OXLINT_RULES = numberFactSchema.parse({
 	value: 13,
 	label: 'rules of my own',
 	source: 'rigtch.fm repository, tooling/oxlint-plugin/rigtch.plugin.mts',
 	checkedOn: '2026-11-25',
 })
+
 const ORPC_MERGED_PULL_REQUESTS = numberFactSchema.parse({
 	value: 5,
 	label: 'merged pull requests',
@@ -31,6 +34,7 @@ const ORPC_MERGED_PULL_REQUESTS = numberFactSchema.parse({
 		'https://github.com/middleapi/orpc/pulls?q=is%3Apr+is%3Amerged+author%3AMnigos',
 	checkedOn: '2026-11-25',
 })
+
 /** Last month rigtch.fm web ran on Next.js, tRPC and Vercel. */
 const OLD_WEB_STACK_UNTIL = monthFactSchema.parse({
 	value: '2026-02',
