@@ -6,6 +6,13 @@
 		"directory": "./dist",
 		"not_found_handling": "404-page",
 	},
+	"routes": [
+		{ "pattern": "mnigos.io", "custom_domain": true },
+		{ "pattern": "www.mnigos.io", "custom_domain": true },
+	],
+	// Routes switch workers.dev off by default; keep it for Previews and as a fallback address.
+	"workers_dev": true,
+	"preview_urls": true,
 	// wrangler preview refuses to run without this block, even an empty one.
 	"previews": {},
 }
