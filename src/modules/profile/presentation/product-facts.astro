@@ -10,14 +10,14 @@ interface Props {
 
 const { product, factsOnly = false } = Astro.props
 
-const cell = 'min-w-0 px-4 pt-3.5 pb-[13px]'
-const value = 'block text-[23px] leading-[1.2] font-bold tracking-[-0.03em] whitespace-nowrap'
+const cell = 'min-w-0 px-4 pt-3.5 pb-3.25'
+const value = 'block text-figure font-bold tracking-figure whitespace-nowrap'
 const grid = factsOnly
   ? 'grid grid-cols-3 border border-line max-xs:grid-cols-1'
-  : 'grid grid-cols-[1.15fr_1fr_1fr_1fr] border border-line max-xs:grid-cols-2'
+  : 'grid grid-cols-facts border border-line max-xs:grid-cols-2'
 const factBorders = factsOnly
   ? 'border-line xs:not-first:border-l max-xs:not-first:border-t'
-  : 'border-l border-line max-xs:nth-3:border-l-0 max-xs:nth-[n+3]:border-t'
+  : 'border-l border-line max-xs:nth-3:border-l-0 max-xs:not-nth-2:border-t'
 ---
 
 <div class={grid}>
@@ -32,7 +32,7 @@ const factBorders = factsOnly
         <strong class:list={['heading', value]}>
           {product.name}<span aria-hidden="true"> ↗</span>
         </strong>
-        <span class="text-[13.5px] opacity-80">{product.tagline}</span>
+        <span class="text-caption opacity-80">{product.tagline}</span>
       </a>
     )
   }
@@ -42,7 +42,7 @@ const factBorders = factsOnly
         <strong class:list={['numeric', value]}>
           {typeof fact.value === 'number' ? formatFactValue(fact.value) : formatMonth(fact.value)}
         </strong>
-        <span class="text-[13.5px] text-dim">{fact.label}</span>
+        <span class="text-caption text-dim">{fact.label}</span>
       </div>
     ))
   }
