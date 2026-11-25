@@ -1,13 +1,26 @@
 ---
 import { Font } from 'astro:assets'
 import '../../../styles/global.css'
+import { getPageMeta } from '../../link-preview/domain/page-meta.helper'
+import { PROFILE } from '../../profile/content/profile.content'
 
 interface Props {
   title: string
   description: string
+  image: string
+  publishedAt?: Date
 }
 
-const { title, description } = Astro.props
+const { title, description, image, publishedAt } = Astro.props
+const { canonical, tags } = getPageMeta({
+  site: import.meta.env.SITE,
+  pathname: Astro.url.pathname,
+  title,
+  description,
+  image,
+  publishedAt,
+  xProfileUrl: PROFILE.links.find(({ label }) => label === 'X')?.url,
+})
 
 const sections = [
   { href: '/work', label: 'Work' },
@@ -32,7 +45,7 @@ const profiles = [
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <link rel="canonical" href={canonical} />
     <link
       rel="alternate"
       type="application/rss+xml"
@@ -40,10 +53,7 @@ const profiles = [
       href={new URL('rss.xml', Astro.site)}
     />
     <meta name="generator" content={Astro.generator} />
-    <meta name="description" content={description} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
+    {tags.map(tag => <meta {...tag} />)}
     <title>{title}</title>
     <Font cssVariable="--font-archivo" preload />
     <Font cssVariable="--font-martian-mono" preload />

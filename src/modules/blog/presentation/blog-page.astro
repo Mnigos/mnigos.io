@@ -1,12 +1,13 @@
 ---
 import Layout from '../../site/presentation/layout.astro'
+import { BLOG_PAGE } from '../content/blog-page.content'
 import { formatIsoDate, sortNewestFirst } from '../domain/post.helper'
 import { getPublishedPosts } from '../infrastructure/posts.query'
 
 const posts = sortNewestFirst(await getPublishedPosts())
 ---
 
-<Layout title="Blog · mnigos" description="Writing about software engineering.">
+<Layout title={BLOG_PAGE.title} description={BLOG_PAGE.description} image="/og/blog.png">
   <h1 class="heading border-b-2 border-ink pb-3 text-heading">
     Blog
   </h1>

@@ -22,7 +22,7 @@ const neighbours = [
 ].filter(neighbour => neighbour !== undefined)
 ---
 
-<Layout title={`${post.data.title} · mnigos`} description={post.data.description}>
+<Layout title={`${post.data.title} · mnigos`} description={post.data.description} image={`/og/blog/${post.id}.png`} publishedAt={post.data.publishedAt}>
   <article class="-mt-8">
     <header class="border-b-2 border-ink pt-8.5 pb-6.5">
       <div class="numeric text-caption text-dim">
