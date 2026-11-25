@@ -1,0 +1,11 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "mnigos-io",
+	"compatibility_date": "2026-11-25",
+	"assets": {
+		"directory": "./dist",
+		"not_found_handling": "404-page",
+	},
+	// wrangler preview refuses to run without this block, even an empty one.
+	"previews": {},
+}
