@@ -96,7 +96,7 @@ export const PROFILE = profileSchema.parse({
 					items: [
 						'Account web app, landing page and the web UI of the Unreal Engine plugin',
 						'Took over a full rewrite of the web app and shipped it to production',
-						'Took over billing on Stripe, made it reliable and extended it with trials, credit packs, saved cards, auto top-up and 3-D Secure',
+						'Took ownership of Stripe billing and made it reliable',
 						'Custom OAuth authorization that connects user accounts with the Unreal Engine plugin and AI integrations',
 						'LudusMCP, an integration layer that connects Ludus AI with external AI agents',
 						'Trial abuse detection with automatic containment and alerts',
@@ -126,7 +126,7 @@ export const PROFILE = profileSchema.parse({
 					title: 'Code quality',
 					items: [
 						'Introduced lint rules and coding standards that raised code quality across the web repository',
-						'Moved parts of the app from Prisma to Drizzle',
+						'Migrated the web projects into a monorepo, speeding up development',
 					].map(text => ({ text })),
 				},
 			],
@@ -253,40 +253,25 @@ export const PROFILE = profileSchema.parse({
 		{
 			title: 'Back end',
 			entries: [
-				{
-					technology: 'NestJS, Hono',
-					usedAt: ['rigtch.fm', 'Tenset', 'platform-hono'],
-				},
-				{
-					technology: 'Bun, Node.js',
-					usedAt: ['rigtch.fm on Bun', 'Node.js earlier'],
-				},
-				{
-					technology: 'oRPC',
-					usedAt: [
-						'rigtch.fm',
-						`${formatFactValue(ORPC_MERGED_PULL_REQUESTS.value)} merged pull requests`,
-					],
-				},
+				{ technology: 'NestJS', usedAt: ['rigtch.fm', 'Tenset'] },
+				{ technology: 'Hono', usedAt: ['rigtch.fm', 'platform-hono'] },
+				{ technology: 'Node.js', usedAt: ['every job and project'] },
+				{ technology: 'Bun', usedAt: ['rigtch.fm'] },
+				{ technology: 'oRPC', usedAt: ['rigtch.fm', 'contributor'] },
 				{
 					technology: 'Effect',
 					usedAt: ['own projects', 'T3 Code contributions'],
 				},
 				{
-					technology: 'BullMQ, Redis',
+					technology: 'BullMQ',
 					usedAt: ['rigtch.fm', `${formatFactValue(QUEUES.value)} queues`],
 				},
+				{ technology: 'Redis', usedAt: ['rigtch.fm', 'Ludus AI'] },
 				{
 					technology: 'REST, GraphQL',
 					usedAt: ['Tenset APIs', 'early rigtch.fm versions'],
 				},
-				{
-					technology: 'OAuth',
-					usedAt: [
-						'Ludus AI plugin authorization',
-						'Spotify login in rigtch.fm',
-					],
-				},
+				{ technology: 'OAuth', usedAt: ['Ludus AI', 'rigtch.fm', 'Blazity'] },
 				{ technology: 'Better Auth', usedAt: ['rigtch.fm'] },
 				{ technology: 'tRPC', usedAt: [`rigtch.fm until ${oldWebStackUntil}`] },
 			],
@@ -305,7 +290,7 @@ export const PROFILE = profileSchema.parse({
 				{ technology: 'Drizzle', usedAt: ['rigtch.fm', 'Ludus AI'] },
 				{
 					technology: 'Prisma',
-					usedAt: ['Ludus AI and rigtch.fm before Drizzle', 'Visegrad24'],
+					usedAt: ['Ludus AI and rigtch.fm before Drizzle', 'Blazity'],
 				},
 				{ technology: 'TypeORM', usedAt: ['rigtch.fm until 2024'] },
 				{ technology: 'S3-compatible storage', usedAt: ['rigtch.fm'] },
@@ -343,7 +328,7 @@ export const PROFILE = profileSchema.parse({
 				},
 				{
 					technology: 'Vercel',
-					usedAt: [`rigtch.fm web until ${oldWebStackUntil}`],
+					usedAt: [`rigtch.fm web until ${oldWebStackUntil}`, 'Blazity'],
 				},
 			],
 		},
@@ -352,7 +337,7 @@ export const PROFILE = profileSchema.parse({
 			entries: [
 				{
 					technology: 'Vitest, Playwright, Testing Library',
-					usedAt: ['rigtch.fm', 'Ludus AI'],
+					usedAt: ['rigtch.fm', 'Ludus AI', 'Blazity'],
 				},
 				{
 					technology: 'oxlint',
@@ -368,7 +353,7 @@ export const PROFILE = profileSchema.parse({
 			title: 'AI',
 			entries: [
 				{
-					technology: 'Claude Code, Codex',
+					technology: 'Claude Code, Codex, T3 Code',
 					usedAt: ['every day', 'side by side'],
 				},
 				{ technology: 'OpenAI API, vector search', usedAt: ['Tenset', '2023'] },
@@ -377,7 +362,10 @@ export const PROFILE = profileSchema.parse({
 		},
 		{
 			title: 'Content and search',
-			entries: [{ technology: 'Sanity, Algolia', usedAt: ['Blazity'] }],
+			entries: [
+				{ technology: 'Sanity, Algolia', usedAt: ['Blazity'] },
+				{ technology: 'Strapi', usedAt: ['own projects', 'Tenset'] },
+			],
 		},
 		{
 			title: 'Learning',
