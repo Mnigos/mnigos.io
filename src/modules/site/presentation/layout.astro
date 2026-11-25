@@ -24,8 +24,8 @@ const { canonical, tags } = getPageMeta({
 
 const sections = [
   { href: '/work', label: 'Work' },
+  { href: '/rigtch', label: PROFILE.product.name },
   { href: '/blog', label: 'Blog' },
-  { href: 'https://rigtch.fm', label: 'rigtch.fm' },
 ]
 
 const newTab = (href: string) =>
@@ -79,12 +79,10 @@ const profiles = [
             sections.map(({ href, label }) => (
               <a
                 href={href}
-                {...newTab(href)}
                 aria-current={Astro.url.pathname.startsWith(href) ? 'page' : undefined}
-                class="border-b-2 border-transparent py-0.75 hover:text-ink current-page:border-accent current-page:text-ink"
+                class="pt-0.75 pb-2 hover:text-ink current-page:link-stroke current-page:text-ink"
               >
                 {label}
-                {href.startsWith('https://') && <span aria-hidden="true"> ↗</span>}
               </a>
             ))
           }

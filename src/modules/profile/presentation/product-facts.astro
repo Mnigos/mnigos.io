@@ -1,26 +1,36 @@
 ---
 import { formatFactValue, formatMonth } from '../domain/profile-format.helper'
-import type { Product } from '../domain/profile.schemas'
+import type { Product, ProductFact } from '../domain/profile.schemas'
 
 interface Props {
   product: Product
   /** Leaves out the product cell, for pages that already show the product. */
   factsOnly?: boolean
+  facts?: ProductFact[]
 }
 
-const { product, factsOnly = false } = Astro.props
+const { product, factsOnly = false, facts = product.facts } = Astro.props
 
+const paired = facts.length % 2 === 0
 const cell = 'min-w-0 px-4 pt-3.5 pb-3.25'
 const value = 'block text-figure font-bold tracking-figure whitespace-nowrap'
 const grid = factsOnly
-  ? 'grid grid-cols-3 border border-line max-xs:grid-cols-1'
+  ? [
+      'grid border border-line xs:auto-cols-fr xs:grid-flow-col',
+      paired ? 'max-xs:grid-cols-2' : 'max-xs:grid-cols-1',
+    ]
   : 'grid grid-cols-facts border border-line max-xs:grid-cols-2'
 const factBorders = factsOnly
-  ? 'border-line xs:not-first:border-l max-xs:not-first:border-t'
+  ? [
+      'border-line xs:not-first:border-l',
+      paired
+        ? 'max-xs:even:border-l max-xs:not-first:not-nth-2:border-t'
+        : 'max-xs:not-first:border-t',
+    ]
   : 'border-l border-line max-xs:nth-3:border-l-0 max-xs:not-nth-2:border-t'
 ---
 
-<div class={grid}>
+<div class:list={grid}>
   {
     !factsOnly && (
       <a
@@ -37,7 +47,7 @@ const factBorders = factsOnly
     )
   }
   {
-    product.facts.map(fact => (
+    facts.map(fact => (
       <div class:list={[cell, factBorders]}>
         <strong class:list={['numeric', value]}>
           {typeof fact.value === 'number' ? formatFactValue(fact.value) : formatMonth(fact.value)}

@@ -1,0 +1,122 @@
+---
+import { formatIsoDate, sortNewestFirst } from '../../blog/domain/post.helper'
+import { getPublishedPosts } from '../../blog/infrastructure/posts.query'
+import { PROFILE } from '../../profile/content/profile.content'
+import { formatMonth } from '../../profile/domain/profile-format.helper'
+import ProductFacts from '../../profile/presentation/product-facts.astro'
+import Layout from '../../site/presentation/layout.astro'
+import { RIGTCH_PAGE } from '../content/rigtch-page.content'
+import OpenProductButton from './open-product-button.astro'
+import RigtchSection from './rigtch-section.astro'
+import Screenshot from './screenshot.astro'
+
+const { product } = PROFILE
+const { screenshots, whatItDoes, stack } = RIGTCH_PAGE
+const posts = sortNewestFirst(await getPublishedPosts())
+const productPosts = posts.filter(({ data }) => data.tags.includes(RIGTCH_PAGE.posts.tag))
+const postTitles = new Map(posts.map(({ id, data }) => [id, data.title]))
+const row = 'border-b border-line'
+---
+
+<Layout title={RIGTCH_PAGE.title} description={RIGTCH_PAGE.description} image="/og/rigtch.png">
+  <div class="grid grid-cols-aside items-end gap-x-6 gap-y-3.5 py-1.5 max-xs:grid-cols-1">
+    <h1 class="heading text-display xs:text-display-lg">{product.name}</h1>
+    <OpenProductButton />
+    <p class="col-span-full mt-1 max-w-intro text-lede text-body">{product.summary}</p>
+  </div>
+
+  <div class="mt-6.5">
+    <ProductFacts product={product} facts={product.pageFacts} factsOnly />
+  </div>
+
+  <div class="mt-3 grid gap-2.5 xs:grid-cols-screenshots">
+    {screenshots.map(screenshot => <Screenshot {...screenshot} />)}
+  </div>
+
+  <RigtchSection heading={whatItDoes.heading}>
+    <ul class="grid gap-x-7 xs:grid-cols-2">
+      {
+        whatItDoes.features.map(({ title, text }) => (
+          <li class:list={[row, 'pt-3.25 pb-3']}>
+            <b class="block text-title font-semibold text-ink">{title}</b>
+            <span class="text-small text-dim">{text}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </RigtchSection>
+
+  <RigtchSection heading={RIGTCH_PAGE.whatIDoHeading}>
+    <p class="max-w-measure text-copy text-body">{product.whatIDo}</p>
+  </RigtchSection>
+
+  <RigtchSection heading={RIGTCH_PAGE.historyHeading}>
+    <dl class="grid grid-cols-label">
+      {
+        product.history.map(({ month, title, text, postId }) => {
+          const postTitle = postId && postTitles.get(postId)
+
+          return (
+            <>
+              <dt class:list={[row, 'numeric pt-3.5 pb-2.75 text-caption text-accent']}>
+                {formatMonth(month.value)}
+              </dt>
+              <dd class:list={[row, 'py-3 text-body']}>
+                <b class="font-semibold text-ink">{title}</b> {text}{' '}
+                {postTitle && (
+                  <a href={`/blog/${postId}`} class="inline-link">
+                    {postTitle}
+                  </a>
+                )}
+              </dd>
+            </>
+          )
+        })
+      }
+    </dl>
+  </RigtchSection>
+
+  <div class="grid gap-x-9 xs:grid-cols-2">
+    <RigtchSection heading={stack.heading}>
+      <dl class="grid grid-cols-label">
+        {
+          stack.rows.map(({ label, value }) => (
+            <>
+              <dt class:list={[row, 'pt-2.25 pb-2 text-dim']}>{label}</dt>
+              <dd class:list={[row, 'pt-2.25 pb-2']}>{value}</dd>
+            </>
+          ))
+        }
+      </dl>
+    </RigtchSection>
+
+    <RigtchSection heading={RIGTCH_PAGE.posts.heading}>
+      <ul>
+        {
+          productPosts.map(({ id, data }) => {
+            const date = formatIsoDate(data.publishedAt)
+
+            return (
+              <li class={row}>
+                <a
+                  href={`/blog/${id}`}
+                  class="group grid grid-cols-aside items-baseline gap-x-4 pt-3.25 pb-3"
+                >
+                  <span class="text-title font-semibold group-hover:text-accent">{data.title}</span>
+                  <time datetime={date} class="numeric text-caption whitespace-nowrap text-dim">
+                    {date}
+                  </time>
+                </a>
+              </li>
+            )
+          })
+        }
+      </ul>
+    </RigtchSection>
+  </div>
+
+  <div class="mt-10 flex flex-wrap items-center justify-between gap-4 border border-line p-5">
+    <p class="text-copy text-body">{RIGTCH_PAGE.closingText}</p>
+    <OpenProductButton />
+  </div>
+</Layout>

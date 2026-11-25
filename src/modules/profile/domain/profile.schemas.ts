@@ -27,6 +27,17 @@ export type NumberFact = z.infer<typeof numberFactSchema>
 export const monthFactSchema = z.object({ value: monthSchema, ...factFields })
 export type MonthFact = z.infer<typeof monthFactSchema>
 
+const productFactSchema = z.union([numberFactSchema, monthFactSchema])
+export type ProductFact = z.infer<typeof productFactSchema>
+
+const productHistoryEntrySchema = z.object({
+	month: monthFactSchema,
+	title: textSchema,
+	text: textSchema,
+	postId: textSchema.optional(),
+})
+
+/** `facts` are the home and work pages' strip, `pageFacts` the product page's. */
 export const productSchema = z.object({
 	name: textSchema,
 	url: z.url(),
@@ -35,7 +46,9 @@ export const productSchema = z.object({
 	summary: textSchema,
 	whatIDo: textSchema,
 	stack: textSchema,
-	facts: z.array(z.union([numberFactSchema, monthFactSchema])),
+	facts: z.array(productFactSchema),
+	pageFacts: z.array(productFactSchema),
+	history: z.array(productHistoryEntrySchema),
 })
 export type Product = z.infer<typeof productSchema>
 

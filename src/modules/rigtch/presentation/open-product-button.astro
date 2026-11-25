@@ -1,0 +1,13 @@
+---
+import { PROFILE } from '../../profile/content/profile.content'
+import { RIGTCH_PAGE } from '../content/rigtch-page.content'
+---
+
+<a
+  href={PROFILE.product.url}
+  target="_blank"
+  rel="noreferrer"
+  class="bg-accent px-4.5 py-2.5 text-small/5 font-bold whitespace-nowrap text-on-accent hover:bg-accent-soft"
+>
+  {RIGTCH_PAGE.openProduct}<span aria-hidden="true"> ↗</span>
+</a>

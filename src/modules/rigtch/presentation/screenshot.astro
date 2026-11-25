@@ -1,0 +1,58 @@
+---
+import type { ImageMetadata } from 'astro'
+import { getImage } from 'astro:assets'
+
+interface Props {
+  image: ImageMetadata
+  /** The crop for the wide first column from `xs` up. */
+  wide?: ImageMetadata
+  alt: string
+}
+
+const { image, wide, alt } = Astro.props
+
+const getSources = (src: ImageMetadata, widths: number[]) =>
+  Promise.all((['avif', 'webp'] as const).map(format => getImage({ src, format, widths })))
+
+/** The column widths of grid-cols-screenshots inside max-w-page. */
+const columnSizes = wide ? '(min-width: 48rem) 308px, 40vw' : '(min-width: 48rem) 192px, 25vw'
+const columnSources = await getSources(wide ?? image, wide ? [308, 616] : [192, 384])
+const stackedSources = await getSources(image, [528, 1056])
+const [, fallback] = stackedSources
+---
+
+<picture
+  class:list={[
+    'relative aspect-4/3 overflow-hidden border border-line bg-cell',
+    wide && 'xs:aspect-auto',
+  ]}
+>
+  {
+    columnSources.map(({ srcSet, options }) => (
+      <source
+        media="(min-width: 35rem)"
+        type={`image/${options.format}`}
+        srcset={srcSet.attribute}
+        sizes={columnSizes}
+      />
+    ))
+  }
+  {
+    stackedSources.map(({ srcSet, options }) => (
+      <source
+        type={`image/${options.format}`}
+        srcset={srcSet.attribute}
+        sizes="calc(100vw - 2rem)"
+      />
+    ))
+  }
+  <img
+    src={fallback.src}
+    width={image.width}
+    height={image.height}
+    alt={alt}
+    loading="lazy"
+    decoding="async"
+    class="absolute inset-0 size-full object-cover"
+  />
+</picture>

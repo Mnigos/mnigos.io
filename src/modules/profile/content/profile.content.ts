@@ -1,17 +1,7 @@
 import type { z } from 'zod'
 import { formatFactValue, formatMonth } from '../domain/profile-format.helper'
-import {
-	monthFactSchema,
-	numberFactSchema,
-	profileSchema,
-} from '../domain/profile.schemas'
-
-const PLAYS_STORED = numberFactSchema.parse({
-	value: 362_000_000,
-	label: 'plays stored',
-	source: 'rigtch.fm production database',
-	checkedOn: '2026-11-25',
-})
+import { numberFactSchema, profileSchema } from '../domain/profile.schemas'
+import { OLD_WEB_STACK_UNTIL, PLAYS_STORED, PRODUCT } from './product.content'
 
 const QUEUES = numberFactSchema.parse({
 	value: 17,
@@ -35,13 +25,6 @@ const ORPC_MERGED_PULL_REQUESTS = numberFactSchema.parse({
 	checkedOn: '2026-11-25',
 })
 
-/** Last month rigtch.fm web ran on Next.js, tRPC and Vercel. */
-const OLD_WEB_STACK_UNTIL = monthFactSchema.parse({
-	value: '2026-02',
-	label: 'Next.js, tRPC and Vercel until',
-	source: 'rigtch.fm repository history',
-	checkedOn: '2026-11-25',
-})
 const oldWebStackUntil = formatMonth(OLD_WEB_STACK_UNTIL.value)
 
 export const PROFILE = profileSchema.parse({
@@ -56,33 +39,7 @@ export const PROFILE = profileSchema.parse({
 		},
 		{ label: 'RSS', url: '/rss.xml' },
 	],
-	product: {
-		name: 'rigtch.fm',
-		url: 'https://rigtch.fm',
-		kind: 'own product',
-		tagline: 'Built and run solo',
-		summary:
-			'Spotify listening stats available all year, not just during Wrapped. Listeners connect their Spotify account, import their full listening history and get shareable top artists and tracks.',
-		whatIDo:
-			'I build and run it alone: API, web app, billing, SEO and support. Most of the traffic comes from Google search.',
-		stack:
-			'TypeScript, NestJS on Bun, PostgreSQL, BullMQ, TanStack Start, oRPC, hosted on Railway.',
-		facts: [
-			{
-				value: 73_000,
-				label: 'listeners',
-				source: 'rigtch.fm production database',
-				checkedOn: '2026-11-25',
-			},
-			PLAYS_STORED,
-			{
-				value: '2026-03',
-				label: 'paid plan live',
-				source: 'rigtch.fm billing records',
-				checkedOn: '2026-11-25',
-			},
-		],
-	},
+	product: PRODUCT,
 	jobs: [
 		{
 			company: 'Ludus AI',

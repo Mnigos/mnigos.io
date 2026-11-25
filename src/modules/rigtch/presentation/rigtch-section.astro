@@ -1,0 +1,12 @@
+---
+interface Props {
+  heading: string
+}
+
+const { heading } = Astro.props
+---
+
+<section class="mt-10 border-t-2 border-ink pt-4">
+  <h2 class="heading mb-3.5 text-heading">{heading}</h2>
+  <slot />
+</section>

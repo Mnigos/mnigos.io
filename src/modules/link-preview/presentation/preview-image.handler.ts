@@ -5,6 +5,7 @@ import { BLOG_PAGE } from '../../blog/content/blog-page.content'
 import { formatIsoDate, getReadingMinutes } from '../../blog/domain/post.helper'
 import { getPublishedPosts } from '../../blog/infrastructure/posts.query'
 import { PROFILE } from '../../profile/content/profile.content'
+import { RIGTCH_PAGE } from '../../rigtch/content/rigtch-page.content'
 import { HOME_PAGE } from '../../site/content/home-page.content'
 import { WORK_PAGE } from '../../work/content/work-page.content'
 import { PREVIEW_IMAGE } from '../domain/preview-image.constants'
@@ -46,6 +47,12 @@ export async function getStaticPaths() {
 			title: WORK_PAGE.heading,
 			description: WORK_PAGE.description,
 			recentWeeks,
+		},
+		{
+			slug: 'rigtch',
+			path: '/rigtch',
+			title: PROFILE.product.name,
+			description: RIGTCH_PAGE.description,
 		},
 		{
 			slug: 'blog',
