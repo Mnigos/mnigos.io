@@ -5,6 +5,38 @@ const now = new Date('2026-12-01T00:00:00.000Z')
 
 describe('describeTokenExpiration', () => {
 	it.each([
+		{
+			expiration: undefined,
+			message: 'RIGTCH_REPO_TOKEN never expires',
+			warn: false,
+		},
+		{
+			expiration: 'not-a-date',
+			message: 'RIGTCH_REPO_TOKEN expiration is unreadable: not-a-date',
+			warn: true,
+		},
+		{
+			expiration: '2026-12-14 00:00:00 UTC',
+			message:
+				'RIGTCH_REPO_TOKEN expires on 2026-12-14 00:00:00 UTC, in 13 days, rotate it as docs/deploy.md describes',
+			warn: true,
+		},
+		{
+			expiration: '2026-12-25 00:00:00 UTC',
+			message:
+				'RIGTCH_REPO_TOKEN expires on 2026-12-25 00:00:00 UTC, in 24 days',
+			warn: false,
+		},
+	])(
+		'names RIGTCH_REPO_TOKEN for expiration $expiration',
+		({ expiration, message, warn }) => {
+			expect(
+				describeTokenExpiration('RIGTCH_REPO_TOKEN', expiration, now)
+			).toEqual({ message, warn })
+		}
+	)
+
+	it.each([
 		{ expiration: '2026-12-14 00:00:00 UTC', days: 13, warn: true },
 		{ expiration: '2026-12-15 00:00:00 UTC', days: 14, warn: false },
 		{ expiration: '2026-12-16 00:00:00 UTC', days: 15, warn: false },
