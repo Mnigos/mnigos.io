@@ -75,7 +75,7 @@ describe('getJobGroupRows', () => {
 				items: [
 					'Account web app, landing page and the web UI of the Unreal Engine plugin',
 					'Took over a full rewrite of the web app and shipped it to production',
-					'Took over billing on Stripe, made it reliable and extended it with trials, credit packs, saved cards, auto top-up and 3-D Secure',
+					'Took ownership of Stripe billing and made it reliable',
 					'Custom OAuth authorization that connects user accounts with the Unreal Engine plugin and AI integrations',
 					'LudusMCP, an integration layer that connects Ludus AI with external AI agents',
 					'Trial abuse detection with automatic containment and alerts',
@@ -105,7 +105,7 @@ describe('getJobGroupRows', () => {
 				term: 'Code quality',
 				items: [
 					'Introduced lint rules and coding standards that raised code quality across the web repository',
-					'Moved parts of the app from Prisma to Drizzle',
+					'Migrated the web projects into a monorepo, speeding up development',
 				],
 			},
 		])
