@@ -3,7 +3,10 @@ import { z } from 'zod'
 
 /** Reads `process.env`, not `astro:env`, because the Bun refresh script cannot import Astro virtual modules. */
 export const env = createEnv({
-	server: { GH_CONTRIBUTIONS_TOKEN: z.string().optional() },
+	server: {
+		GH_CONTRIBUTIONS_TOKEN: z.string().optional(),
+		RIGTCH_REPO_TOKEN: z.string().optional(),
+	},
 	runtimeEnv: process.env,
 	emptyStringAsUndefined: true,
 })

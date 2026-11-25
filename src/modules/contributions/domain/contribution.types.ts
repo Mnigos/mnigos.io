@@ -45,3 +45,6 @@ export type GitLabEventCounts = readonly number[]
 
 /** GitLab event counts by ISO date, only for days with events. */
 export type GitLabEventDays = Readonly<Record<string, GitLabEventCounts>>
+
+/** Commit counts by ISO date, only for days with commits. */
+export type CommitDays = Readonly<Record<string, number>>

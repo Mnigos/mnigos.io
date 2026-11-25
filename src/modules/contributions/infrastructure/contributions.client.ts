@@ -6,7 +6,7 @@ import { env } from './contributions.config'
 import gitLabEvents from './gitlab-events.snapshot.json'
 
 const FIRST_YEAR = 2021
-const TOKEN_EXPIRATION_HEADER = 'github-authentication-token-expiration'
+export const TOKEN_EXPIRATION_HEADER = 'github-authentication-token-expiration'
 const TOKEN_REJECTED =
 	'GitHub rejected GH_CONTRIBUTIONS_TOKEN. Create a classic token with the read:user scope, store it with `gh secret set GH_CONTRIBUTIONS_TOKEN --repo Mnigos/mnigos.io`, then rerun the workflow (docs/deploy.md)'
 const CALENDAR_QUERY = `query ($from: DateTime!, $to: DateTime!) {
