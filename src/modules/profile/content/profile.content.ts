@@ -347,4 +347,8 @@ export const PROFILE = profileSchema.parse({
 			entries: [{ technology: 'Rust', usedAt: ['after hours'] }],
 		},
 	],
+	work: {
+		intro: 'My own product first, then the jobs, newest first.',
+		weeklyStripLegend: 'One square is one week of my GitHub contributions.',
+	},
 } satisfies z.input<typeof profileSchema>)
