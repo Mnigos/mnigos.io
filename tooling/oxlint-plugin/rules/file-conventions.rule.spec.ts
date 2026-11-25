@@ -245,12 +245,33 @@ describe('module-layout', () => {
 		'src/modules/blog/content/post.content.ts',
 		'src/modules/blog-v2/domain/post.helper.ts',
 		'src/content.config.ts',
+		'src/content.config.spec.ts',
 		'src/pages/index.ts',
+		'src/pages/blog/rss.xml.ts',
+		'src/env.d.ts',
+		'scripts/tool.helper.ts',
 	])('accepts %s', filename => {
 		const result = lint({ filename, rules: ['module-layout'] })
 
 		expect(result.status).toBe(0)
 		expect(result.diagnostics).toStrictEqual([])
+	})
+
+	it.each([
+		'src/modules/orphan.helper.ts',
+		'src/lib/orphan.helper.ts',
+		'src/orphan.helper.ts',
+	])('rejects a file outside a module at %s', filename => {
+		const result = lint({ filename, rules: ['module-layout'] })
+
+		expect(result.status).toBe(1)
+		expect(result.diagnostics).toStrictEqual([
+			{
+				code: 'mnigos(module-layout)',
+				message:
+					'Move this file into src/modules/<module>/ under one of its layer folders: domain/, infrastructure/, presentation/, content/ (AGENTS.md boundaries).',
+			},
+		])
 	})
 
 	it.each(['Blog', 'blog_module', '-blog', 'blog-', 'blog--module'])(

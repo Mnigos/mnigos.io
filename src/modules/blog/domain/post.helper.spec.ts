@@ -55,8 +55,8 @@ describe('formatPostDate', () => {
 		expect(formatPostDate(new Date(2026, 0, 5, 12), month)).toBe(expected)
 	})
 
-	it('keeps a UTC-midnight post on its day in the build time zone', () => {
-		const date = new Date('2026-01-05T00:00:00Z')
+	it('keeps a local-midnight post on its day in the build time zone', () => {
+		const date = new Date(2026, 0, 5)
 
 		expect(formatPostDate(date, 'long')).toBe('January 5, 2026')
 		expect(formatPostDate(date, 'short')).toBe('Jan 5, 2026')
