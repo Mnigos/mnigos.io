@@ -90,7 +90,7 @@ describe('PROFILE', () => {
 			{ name: 'T3 Code', value: 43, label: 'merged pull requests' },
 			{ name: 'oRPC', value: 5, label: 'merged pull requests' },
 			{ name: 'posthog-js', value: 1, label: 'merged pull request' },
-			{ name: 'platform-hono', value: 5_400, label: 'npm downloads a month' },
+			{ name: 'platform-hono', value: 5400, label: 'npm downloads a month' },
 		])
 	})
 
@@ -106,7 +106,7 @@ describe('PROFILE', () => {
 		(technology, index, expected) => {
 			const entry = PROFILE.stack
 				.flatMap(group => group.entries)
-				.find(entry => entry.technology === technology)
+				.find(candidate => candidate.technology === technology)
 
 			expect(entry?.usedAt[index]).toBe(expected)
 		}

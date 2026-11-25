@@ -71,7 +71,7 @@ export const profileSchema = z.object({
 		linkSchema.extend({
 			url: z.union([
 				z.url({ protocol: /^https$/u }),
-				z.string().startsWith('/'),
+				z.string().regex(/^\/(?![/\\])/u),
 			]),
 		})
 	),
