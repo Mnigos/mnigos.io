@@ -1,0 +1,42 @@
+---
+import { formatFactValue, formatMonth } from '../domain/profile-format.helper'
+import type { Product } from '../domain/profile.schemas'
+
+interface Props {
+  product: Product
+}
+
+const { product } = Astro.props
+
+const cell = 'min-w-0 px-4 pt-3.5 pb-[13px]'
+const value = 'block text-[23px] leading-[1.2] font-bold tracking-[-0.03em] whitespace-nowrap'
+---
+
+<div class="grid grid-cols-[1.15fr_1fr_1fr_1fr] border border-line max-xs:grid-cols-2">
+  <a
+    href={product.url}
+    target="_blank"
+    rel="noreferrer"
+    class:list={[cell, 'bg-accent text-on-accent hover:bg-level-5']}
+  >
+    <strong class:list={['heading', value]}>
+      {product.name}<span aria-hidden="true"> ↗</span>
+    </strong>
+    <span class="text-[13.5px] opacity-80">{product.tagline}</span>
+  </a>
+  {
+    product.facts.map(fact => (
+      <div
+        class:list={[
+          cell,
+          'border-l border-line max-xs:nth-3:border-l-0 max-xs:nth-[n+3]:border-t',
+        ]}
+      >
+        <strong class:list={['numeric', value]}>
+          {typeof fact.value === 'number' ? formatFactValue(fact.value) : formatMonth(fact.value)}
+        </strong>
+        <span class="text-[13.5px] text-dim">{fact.label}</span>
+      </div>
+    ))
+  }
+</div>
