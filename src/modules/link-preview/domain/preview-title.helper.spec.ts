@@ -7,7 +7,7 @@ describe('fitPreviewTitle', () => {
 		title => {
 			expect(fitPreviewTitle(title)).toStrictEqual({
 				fontSize: 120,
-				lineClamp: 2,
+				lineClamp: 1,
 			})
 		}
 	)
@@ -16,27 +16,47 @@ describe('fitPreviewTitle', () => {
 		expect(
 			fitPreviewTitle('Why rigtch.fm stores every play itself')
 		).toStrictEqual({
-			fontSize: 96,
-			lineClamp: 3,
+			fontSize: 80,
+			lineClamp: 2,
 		})
 	})
 
 	it.each([
-		[20, 120],
-		[40, 96],
-		[60, 80],
-		[100, 64],
+		[20, 96],
+		[40, 80],
+		[60, 64],
+		[100, 56],
 		[1000, 56],
 	])('fits a single word of %i characters at %i pixels', (length, expected) => {
 		expect(fitPreviewTitle('x'.repeat(length)).fontSize).toBe(expected)
 	})
+
+	it.each([
+		[15, 120, 1],
+		[16, 96, 2],
+		[38, 96, 2],
+		[39, 80, 2],
+		[46, 80, 2],
+		[47, 64, 3],
+		[87, 64, 3],
+		[88, 56, 3],
+		[99, 56, 3],
+	])(
+		'fits %i characters at %i pixels with %i lines',
+		(length, fontSize, lineClamp) => {
+			expect(fitPreviewTitle('x'.repeat(length))).toStrictEqual({
+				fontSize,
+				lineClamp,
+			})
+		}
+	)
 
 	it.each(['word '.repeat(200), 'x'.repeat(10_000)])(
 		'clamps an overlong title to a finite number of lines (%#)',
 		title => {
 			expect(fitPreviewTitle(title)).toStrictEqual({
 				fontSize: 56,
-				lineClamp: 5,
+				lineClamp: 3,
 			})
 		}
 	)
@@ -71,7 +91,7 @@ describe('fitPreviewTitle', () => {
 	it.each(['', ' ', '\r\n\t'])('handles an empty title %j', title => {
 		expect(fitPreviewTitle(title)).toStrictEqual({
 			fontSize: 120,
-			lineClamp: 2,
+			lineClamp: 1,
 		})
 	})
 })
