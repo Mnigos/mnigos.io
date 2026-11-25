@@ -11,23 +11,28 @@ const DISABLED_RULES = {
 		'key order carries meaning: Astro spreads attribute objects in declaration order and configs read top down',
 	'require-await':
 		'conflicts with typescript/promise-function-async on pass-through promise callbacks',
-	'promise/prefer-await-to-then': 'fire-and-forget void promises',
 	'typescript/no-confusing-void-expression':
-		'concise void-returning arrow callbacks per AGENTS.md',
+		'concise void-returning arrow callbacks are allowed',
 	'typescript/non-nullable-type-assertion-style':
-		'pushes towards non-null assertions, banned by AGENTS.md',
+		'pushes towards non-null assertions, which typescript/no-non-null-assertion bans',
 	'typescript/prefer-nullish-coalescing':
-		'AGENTS.md uses || for intentional all-falsy checks',
+		'|| is intentional where every falsy value needs the fallback',
 	'typescript/strict-boolean-expressions':
 		'truthiness checks and || fallbacks are intentional',
 	'unicorn/import-style': 'named imports from Node builtins are the convention',
 	'unicorn/no-array-reduce': 'reduce is accepted for aggregations',
-	'unicorn/no-useless-undefined':
-		'AGENTS.md prefers explicit undefined at API boundaries',
-	'unicorn/prefer-ternary': 'AGENTS.md prefers early returns over ternaries',
-	'unicorn/switch-case-braces':
-		'AGENTS.md skips braces for single-statement blocks',
+	'unicorn/prefer-ternary': 'early returns read better than ternaries',
+	'unicorn/switch-case-braces': 'single-statement cases need no braces',
 } as const satisfies Record<string, string>
+
+const CONVENTION_RULES = {
+	'max-lines': ['error', { max: 400 }],
+	'mnigos/declaration-group-spacing': 'error',
+	'mnigos/declaration-jsdoc': 'error',
+	'mnigos/no-inline-param-type': 'error',
+	'mnigos/no-let': 'error',
+	'mnigos/type-param-prefix': 'error',
+} satisfies OxlintOverride['rules']
 
 const PRESETS = [core, astro]
 
@@ -40,6 +45,7 @@ const SPEC_PLUGINS = [
 
 export default defineConfig({
 	extends: PRESETS,
+	jsPlugins: ['./tooling/oxlint-plugin/mnigos.plugin.mts'],
 	options: { typeAware: true },
 	env: { browser: true, node: true, es2024: true },
 	rules: {
@@ -81,29 +87,33 @@ export default defineConfig({
 			'error',
 			{ considerDefaultExhaustiveForUnions: true },
 		],
+		...CONVENTION_RULES,
 	},
 	overrides: [
 		{
-			// Their tool loads them only through the default export: Astro, commitlint, oxlint, oxfmt and Vitest.
+			// Their tool loads them only through the default export: Astro, commitlint, oxlint (config and plugin), oxfmt and Vitest.
 			files: [
 				'astro.config.mjs',
 				'commitlint.config.ts',
 				'oxlint.config.mts',
+				'tooling/oxlint-plugin/mnigos.plugin.mts',
 				'oxfmt.config.mts',
 				'vitest.config.ts',
 			],
 			rules: { 'import/no-default-export': 'off' },
 		},
 		{
-			// Astro injects Astro into every component and names components in PascalCase.
+			files: ['src/**'],
+			rules: {
+				'mnigos/file-role-folder': 'error',
+				'mnigos/file-role-suffix': 'error',
+				'mnigos/module-layout': 'error',
+			},
+		},
+		{
+			// Astro injects Astro into every component.
 			files: ['**/*.astro'],
 			globals: { Astro: 'readonly' },
-			rules: {
-				'unicorn/filename-case': [
-					'error',
-					{ cases: { kebabCase: true, pascalCase: true } },
-				],
-			},
 		},
 		{
 			files: ['**/*.spec.ts'],
