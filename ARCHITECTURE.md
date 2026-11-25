@@ -16,7 +16,7 @@ A single Astro 7 package that builds a fully static site: every page, the sitema
 | `public/`                | Files copied to `dist/` as they are, such as the favicon.                                                                                                                                                                  |
 | `docs/decisions/`        | Architecture decision records.                                                                                                                                                                                             |
 
-Outside `src/modules/`, `src/` holds only `src/content.config.ts`, `src/pages/`, `src/content/` and `src/styles/`, and lint fails on any other source file there. Specs sit next to the file they test as `<name>.spec.ts` in `src/`, `tooling/` and `scripts/`, and `bun run test` runs all of them.
+Outside `src/modules/`, `src/` holds only `src/content.config.ts` with its spec, `src/pages/`, `src/content/`, `src/styles/` and `*.d.ts` files, and lint fails on any other TypeScript file there. Specs sit next to the file they test as `<name>.spec.ts` in `src/`, `tooling/` and `scripts/`, and `bun run test` runs all of them.
 
 ## Build-time data flow
 
