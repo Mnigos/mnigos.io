@@ -1,8 +1,6 @@
 ---
-import { getContributionLevel } from '../../contributions/domain/contribution-level.helper'
 import type { ContributionYear } from '../../contributions/domain/contribution.types'
-import { getWeeklyTotals } from '../../contributions/domain/weekly-totals.helper'
-import ContributionCell from '../../contributions/presentation/contribution-cell.astro'
+import WeeklyStrip from '../../contributions/presentation/weekly-strip.astro'
 import { formatMonth } from '../../profile/domain/profile-format.helper'
 import type { Job } from '../../profile/domain/profile.schemas'
 import { getJobGroupRows } from '../domain/job-groups.helper'
@@ -19,7 +17,6 @@ interface Props {
 
 const { job, years, today, legend } = Astro.props
 const { start, end } = job.period
-const weeks = getWeeklyTotals(years, getJobPeriodRange(job.period, today))
 const rows = getJobGroupRows(job.groups)
 ---
 
@@ -29,18 +26,12 @@ const rows = getJobGroupRows(job.groups)
   aside={`${formatMonth(start)} to ${end ? formatMonth(end) : 'now'}`}
   subheading={job.role}
 >
-  <div class="mt-4 flex flex-wrap gap-0.5">
-    {
-      weeks.map(({ weekStart, total }) => (
-        <ContributionCell
-          level={getContributionLevel(total, WEEKLY_THRESHOLDS)}
-          title={`${total} in the week of ${weekStart}`}
-          class="size-2.25"
-        />
-      ))
-    }
-  </div>
-  {legend && <p class="mt-2 text-caption/4.75 text-faint">{legend}</p>}
+  <WeeklyStrip
+    years={years}
+    period={getJobPeriodRange(job.period, today)}
+    thresholds={WEEKLY_THRESHOLDS}
+    legend={legend}
+  />
   <p class="mt-4 max-w-measure text-copy text-body">{job.description}</p>
   {
     rows.length > 0 && (

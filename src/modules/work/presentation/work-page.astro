@@ -1,5 +1,11 @@
 ---
+import {
+  RIGTCH_FM_FIRST_WEEK,
+  RIGTCH_FM_WEEKLY_THRESHOLDS,
+} from '../../contributions/domain/rigtch-fm-commits.constants'
 import { loadContributionYears } from '../../contributions/infrastructure/contributions.client'
+import { loadRigtchFmCommitYears } from '../../contributions/infrastructure/rigtch-fm-commits.client'
+import WeeklyStrip from '../../contributions/presentation/weekly-strip.astro'
 import { PROFILE } from '../../profile/content/profile.content'
 import ProductFacts from '../../profile/presentation/product-facts.astro'
 import Layout from '../../site/presentation/layout.astro'
@@ -25,6 +31,12 @@ const today = new Date().toISOString().slice(0, 10)
     aside={product.kind}
     subheading={product.tagline}
   >
+    <WeeklyStrip
+      years={loadRigtchFmCommitYears()}
+      period={{ from: RIGTCH_FM_FIRST_WEEK, to: today }}
+      thresholds={RIGTCH_FM_WEEKLY_THRESHOLDS}
+      legend={work.commitStripLegend}
+    />
     <p class="mt-4 max-w-measure text-copy text-body">{product.summary}</p>
     <div class="mt-5">
       <ProductFacts product={product} factsOnly />
