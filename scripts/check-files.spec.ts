@@ -216,6 +216,7 @@ describe('check-files', () => {
 		'type Names = string[]',
 		'type Pair = [name: string, age: number]',
 		'const pattern = /[0-9]:[0-9]/u',
+		"const escaped = value.replace(/[&<>]/g, '')",
 		'const entry = { [key]: value }',
 		`const start = \`\${year}-01-01\``,
 	])('accepts ordinary TypeScript: %s', content => {
