@@ -5,7 +5,7 @@ import type {
 import type { Job } from '../../profile/domain/profile.schemas'
 
 export const WEEKLY_THRESHOLDS: ContributionLevelThresholds = [
-	1, 16, 46, 101, 221,
+	1, 16, 46, 101, 171, 251, 401, 601,
 ]
 
 export function getJobPeriodRange(

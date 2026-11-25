@@ -12,12 +12,16 @@
 	--color-line: #272724;
 	--color-line-strong: #3b3a35;
 	--color-accent: #ff5a2e;
+	--color-accent-soft: #ffc2a3;
 	--color-on-accent: #0a0a0b;
 	--color-level-1: #3a1a10;
 	--color-level-2: #6e2a14;
 	--color-level-3: #b23f1a;
 	--color-level-4: #ff5a2e;
-	--color-level-5: #ffc2a3;
+	--color-level-5: #ff8a66;
+	--color-level-6: #ffb89c;
+	--color-level-7: #ffe1d2;
+	--color-level-8: #ffffff;
 
 	--font-sans: var(--font-archivo);
 	--font-mono: var(--font-martian-mono);
@@ -75,7 +79,7 @@
 /** The Shiki theme builds these names at runtime, so Tailwind cannot see them in use. */
 @theme static {
 	--color-code-keyword: var(--color-accent);
-	--color-code-string: var(--color-level-5);
+	--color-code-string: var(--color-accent-soft);
 	--color-code-function: #f4b860;
 	--color-code-constant: #ff8f8f;
 	--color-code-type: #8ecfc0;

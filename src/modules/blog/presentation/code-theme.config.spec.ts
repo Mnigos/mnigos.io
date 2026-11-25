@@ -128,6 +128,11 @@ describe('codeTheme', () => {
 		}
 	})
 
+	it('preserves the soft accent colour for strings', () => {
+		expect(resolveColour('--color-accent-soft')).toBe('#ffc2a3')
+		expect(resolveColour('--color-code-string')).toBe('#ffc2a3')
+	})
+
 	it('uses the code background and variable foreground', async () => {
 		const result = await highlighted
 
@@ -235,5 +240,20 @@ describe('codeTheme', () => {
 
 			expect(contrast, `${variable} contrast`).toBeGreaterThanOrEqual(4.5)
 		}
+	})
+})
+
+describe('contribution level colours', () => {
+	it.each([
+		[1, '#3a1a10'],
+		[2, '#6e2a14'],
+		[3, '#b23f1a'],
+		[4, '#ff5a2e'],
+		[5, '#ff8a66'],
+		[6, '#ffb89c'],
+		[7, '#ffe1d2'],
+		[8, '#ffffff'],
+	])('declares level %i as %s', (level, colour) => {
+		expect(variables.get(`--color-level-${level}`)).toBe(colour)
 	})
 })
