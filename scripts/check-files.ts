@@ -6,6 +6,10 @@ const DASHES = [String.fromCodePoint(0x20_13), String.fromCodePoint(0x20_14)]
 const COMPONENT_PATH_PATTERN =
 	/^src\/modules\/[a-z0-9]+(?:-[a-z0-9]+)*\/presentation\/(?:[a-z0-9-]+\/)*[a-z0-9]+(?:-[a-z0-9]+)*\.astro$/u
 const ROUTE_PREFIX = 'src/pages/'
+const CLASS_SOURCE_PATTERN = /^src\/(?!content\/).+(?<!\.spec)\.(?:astro|ts)$/u
+/** Matches `text-[13px]`, `bg-(--x)`, `[&>dd]:`, `[@media...]:` and `[mask-type:alpha]` inside one class token. */
+const ARBITRARY_CLASS_PATTERN =
+	/[a-z\d]-\[|[a-z\d]-\((?:[a-z-]+:)?--|\[[^\]]*&|\[@|(?:^|:)\[[a-z-]+:/u
 
 function getTrackedFiles() {
 	return execFileSync('git', ['ls-files', '-z'], { encoding: 'utf-8' })
@@ -51,9 +55,27 @@ function checkComponentPath(path: string) {
 	]
 }
 
+/** oxlint skips the template part of `.astro` files, so class attributes are checked here. */
+function findArbitraryClasses(path: string) {
+	if (!CLASS_SOURCE_PATTERN.test(path)) return []
+
+	return readFileSync(path, 'utf-8')
+		.split('\n')
+		.flatMap((line, index) =>
+			line
+				.split(/[\s'"`]+/u)
+				.filter(token => ARBITRARY_CLASS_PATTERN.test(token))
+				.map(
+					token =>
+						`${path}:${index + 1}: arbitrary Tailwind class ${token}, use a theme token from src/styles/global.css`
+				)
+		)
+}
+
 const problems = getTrackedFiles().flatMap(path => [
 	...checkComponentPath(path),
 	...findDashes(path),
+	...findArbitraryClasses(path),
 ])
 
 if (problems.length > 0) {
