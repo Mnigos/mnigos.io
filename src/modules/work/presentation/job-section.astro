@@ -1,0 +1,66 @@
+---
+import { getContributionLevel } from '../../contributions/domain/contribution-level.helper'
+import type { ContributionYear } from '../../contributions/domain/contribution.types'
+import { getWeeklyTotals } from '../../contributions/domain/weekly-totals.helper'
+import { formatMonth } from '../../profile/domain/profile-format.helper'
+import type { Job } from '../../profile/domain/profile.schemas'
+import { getJobGroupRows } from '../domain/job-groups.helper'
+import { getJobPeriodRange, WEEKLY_THRESHOLDS } from '../domain/job-weeks.helper'
+import DefinitionList from './definition-list.astro'
+import WorkSection from './work-section.astro'
+
+interface Props {
+  job: Job
+  years: ContributionYear[]
+  today: string
+}
+
+const { job, years, today } = Astro.props
+const { start, end } = job.period
+const weeks = getWeeklyTotals(years, getJobPeriodRange(job.period, today))
+const rows = getJobGroupRows(job.groups)
+---
+
+<WorkSection
+  heading={job.company}
+  url={job.url}
+  aside={`${formatMonth(start)} to ${end ? formatMonth(end) : 'now'}`}
+  subheading={job.role}
+>
+  <div class="mt-4 flex flex-wrap gap-0.5">
+    {
+      weeks.map(({ weekStart, total }) => (
+        <span
+          title={`${total} in the week of ${weekStart}`}
+          data-level={getContributionLevel(total, WEEKLY_THRESHOLDS)}
+          class="block size-[9px] rounded-[2px] data-[level=0]:bg-cell"
+        />
+      ))
+    }
+  </div>
+  <p class="mt-4 max-w-[36em] text-[17px] text-body">{job.description}</p>
+  {
+    rows.length > 0 && (
+      <DefinitionList>
+        {rows.map(row => (
+          <>
+            <dt>{row.term}</dt>
+            <dd>
+              {'items' in row ? (
+                <ul class="grid gap-[7px]">
+                  {row.items.map(item => (
+                    <li class="relative pl-4 before:absolute before:top-[0.62em] before:left-0 before:size-[5px] before:bg-accent">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                row.text
+              )}
+            </dd>
+          </>
+        ))}
+      </DefinitionList>
+    )
+  }
+</WorkSection>

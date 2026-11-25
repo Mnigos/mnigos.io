@@ -1,0 +1,57 @@
+---
+import { loadContributionYears } from '../../contributions/infrastructure/contributions.client'
+import { PROFILE } from '../../profile/content/profile.content'
+import Layout from '../../site/presentation/layout.astro'
+import DefinitionList from './definition-list.astro'
+import JobSection from './job-section.astro'
+import WorkSection from './work-section.astro'
+
+const { name, product, jobs, stack } = PROFILE
+const years = await loadContributionYears()
+const today = new Date().toISOString().slice(0, 10)
+const description = `${name}: ${[product.name, ...jobs.map(({ company }) => company)].join(', ')}`
+---
+
+<Layout title="Work · mnigos" description={description}>
+  <h1 class="heading my-1.5 text-[36px] leading-none xs:text-[44px]">Work</h1>
+
+  <WorkSection
+    heading={product.name}
+    url={product.url}
+    aside={product.kind}
+    subheading={product.tagline}
+  >
+    <p class="mt-4 max-w-[36em] text-[17px] text-body">{product.summary}</p>
+    {/* MNG-2 facts strip from product.facts */}
+    <DefinitionList>
+      <dt>What I do</dt>
+      <dd>{product.whatIDo}</dd>
+      <dt>Stack</dt>
+      <dd>{product.stack}</dd>
+    </DefinitionList>
+  </WorkSection>
+
+  {jobs.map(job => <JobSection job={job} years={years} today={today} />)}
+
+  <WorkSection heading="Stack" aside="with where I used it">
+    <DefinitionList>
+      {
+        stack.map(({ title, entries }) => (
+          <>
+            <dt>{title}</dt>
+            <dd>
+              <ul class="grid gap-2">
+                {entries.map(({ technology, usedAt }) => (
+                  <li class="grid grid-cols-1 gap-x-4 gap-y-0.5 xs:grid-cols-[190px_1fr]">
+                    <b class="font-semibold text-ink">{technology}</b>
+                    <span class="text-dim">{usedAt.join(', ')}</span>
+                  </li>
+                ))}
+              </ul>
+            </dd>
+          </>
+        ))
+      }
+    </DefinitionList>
+  </WorkSection>
+</Layout>
