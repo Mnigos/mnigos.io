@@ -1,0 +1,21 @@
+---
+interface Props {
+  level: number
+  title?: string
+  class?: string
+}
+
+const { level, title, class: className } = Astro.props
+
+/** Whole class names, indexed by level, so Tailwind finds them in the source. */
+const backgrounds = [
+  'bg-cell',
+  'bg-level-1',
+  'bg-level-2',
+  'bg-level-3',
+  'bg-level-4',
+  'bg-level-5',
+]
+---
+
+<div class:list={['aspect-square rounded-xs', backgrounds[level], className]} title={title}></div>
