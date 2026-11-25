@@ -12,7 +12,7 @@ export function sortNewestFirst<TPost extends DatedPost>(
 
 export function formatPostDate(date: Date, month: 'long' | 'short') {
 	return date.toLocaleDateString('en-US', {
-		year: 'numeric',
+		year: 'full',
 		month,
 		day: 'numeric',
 	})
