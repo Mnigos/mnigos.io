@@ -41,6 +41,16 @@ The home page grid and the yearly totals show GitHub and GitLab contributions ad
 - Commits do not count because they come from push events, which repeat the same commits after every rebase and merge: 2022-02-01 had 249 with commits counted and 47 by events.
 - The GitLab file is the only durable copy of this data. It keeps all ten event counts per day, and neither the build nor the refresh script regenerates it.
 
+### rigtch.fm commits
+
+The rigtch.fm section on the work page shows a strip of weekly commit counts from 2022-11-01 to the current week, on its own thresholds because weekly commit sums are far smaller than contribution sums. `loadRigtchFmCommitYears` in `contributions/infrastructure/rigtch-fm-commits.client.ts` adds up two committed snapshots that hold only dates and counts. These numbers stay out of the home page grid and the yearly totals.
+
+- Sources: the private repositories `Rigtch/rigtch-fm-api` and `Rigtch/rigtch-fm-www`, both archived, and the monorepo `Rigtch/rigtch.fm`. Only commits on each repository's default branch count, merges included, because squash-merged pull request branches would count the same work twice.
+- Date rule: a commit counts on its author date converted to UTC. The author date is when the work was written and survives rebases and merges, while the commit date changes on every rebase. UTC matches the GitHub REST API and every other day count in this module.
+- Archives: `rigtch-fm-archive-commits.snapshot.json` was counted once on 2026-11-25 with `git log` on the default branch of each repository, keeping Igor's author emails, which appear nowhere in this repository. It holds 1,830 commits: 206 in 2022, 507 in 2023, 1,116 in 2024 and 1 in 2025. Nothing regenerates it.
+- Monorepo: `rigtch-fm-commits.snapshot.json` is rewritten by `bun run contributions:refresh` from the GitHub REST commit list of `Rigtch/rigtch.fm` filtered by the login `Mnigos`, so no email list exists. The refresh keeps the file when the days are unchanged and keeps it as it is when the request fails ([docs/deploy.md](docs/deploy.md)).
+- No commit counts twice: on 2026-11-25 the three repositories shared no commit SHA and no pair of author timestamp and author email, the archives receive no new commits, and the REST list returns each SHA once. The sum of the two files therefore needs no deduplication.
+
 ## Decision records
 
 - [0001: Naming and layering conventions](docs/decisions/0001-naming-and-layering-conventions.md)
