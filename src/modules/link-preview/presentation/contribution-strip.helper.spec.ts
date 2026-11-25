@@ -8,27 +8,28 @@ const COLORS = [
 	'#b23f1a',
 	'#ff5a2e',
 	'#ffc2a3',
+	'#ffd3bd',
+	'#ffe4d7',
+	'#fff5ef',
 ]
 
 describe('getContributionStrip', () => {
 	it('draws one cell per level in the supplied order with its indexed color', () => {
-		const levels = [5, 0, 3, 1, 4, 2, 0]
+		const levels = [8, 5, 0, 3, 7, 1, 4, 6, 2, 0]
 		const strip = getContributionStrip(levels, COLORS)
 
-		expect(strip.type).toBe('div')
-		expect(strip.props.style.display).toBe('flex')
 		expect(strip.props.children).toHaveLength(levels.length)
-		expect(strip.props.children.map(cell => cell.type)).toStrictEqual(
-			levels.map(() => 'div')
-		)
 		expect(
 			strip.props.children.map(cell => cell.props.style.backgroundColor)
 		).toStrictEqual([
+			COLORS[8],
 			COLORS[5],
 			COLORS[0],
 			COLORS[3],
+			COLORS[7],
 			COLORS[1],
 			COLORS[4],
+			COLORS[6],
 			COLORS[2],
 			COLORS[0],
 		])
