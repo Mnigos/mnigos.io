@@ -55,6 +55,8 @@ export const PRODUCT = {
 		'I build and run it alone: API, web app, billing, SEO and support. Most of the traffic comes from Google search.',
 	stack:
 		'TypeScript, NestJS on Bun, PostgreSQL, BullMQ, TanStack Start, oRPC, hosted on Railway.',
+	commitStripLegend:
+		'One square is one week of my git commits to rigtch.fm since November 2022.',
 	facts: [LISTENERS, PLAYS_STORED, PAID_PLAN_LIVE],
 	pageFacts: [LISTENERS, PLAYS_STORED, EVERY_PLAY_SAVED_SINCE, PAID_PLAN_LIVE],
 	history: [

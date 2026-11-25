@@ -17,6 +17,12 @@ describe('PRODUCT', () => {
 		expect(PROFILE.product).toStrictEqual(PRODUCT)
 	})
 
+	test('keeps the approved commit strip legend', () => {
+		expect(PROFILE.product.commitStripLegend).toBe(
+			'One square is one week of my git commits to rigtch.fm since November 2022.'
+		)
+	})
+
 	test('keeps the four product page facts in their display order', () => {
 		expect(
 			PROFILE.product.pageFacts.map(({ value, label }) => ({ value, label }))

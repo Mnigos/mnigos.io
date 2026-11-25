@@ -46,6 +46,7 @@ export const productSchema = z.object({
 	summary: textSchema,
 	whatIDo: textSchema,
 	stack: textSchema,
+	commitStripLegend: textSchema,
 	facts: z.array(productFactSchema),
 	pageFacts: z.array(productFactSchema),
 	history: z.array(productHistoryEntrySchema),
@@ -109,10 +110,6 @@ export const profileSchema = z.object({
 		projects: z.array(openSourceProjectSchema),
 	}),
 	stack: z.array(stackGroupSchema),
-	work: z.object({
-		intro: textSchema,
-		weeklyStripLegend: textSchema,
-		commitStripLegend: textSchema,
-	}),
+	work: z.object({ intro: textSchema, weeklyStripLegend: textSchema }),
 })
 export type Profile = z.infer<typeof profileSchema>
