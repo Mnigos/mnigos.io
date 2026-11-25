@@ -1,0 +1,40 @@
+---
+import { getCollection } from 'astro:content'
+import Layout from '../../layouts/Layout.astro'
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).toSorted(
+  (a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf()
+)
+---
+
+<Layout title="Blog — mnigos" description="Writing about software engineering.">
+  <h1 class="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+    Blog
+  </h1>
+  <ul class="mt-8 space-y-8">
+    {
+      posts.map(post => (
+        <li>
+          <a href={`/blog/${post.id}`} class="group block">
+            <h2 class="font-medium text-zinc-900 group-hover:underline group-hover:underline-offset-4 dark:text-zinc-100">
+              {post.data.title}
+            </h2>
+            <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+              {post.data.description}
+            </p>
+            <time
+              datetime={post.data.publishedAt.toISOString()}
+              class="mt-1 block text-sm text-zinc-500 dark:text-zinc-400"
+            >
+              {post.data.publishedAt.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+              })}
+            </time>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Layout>

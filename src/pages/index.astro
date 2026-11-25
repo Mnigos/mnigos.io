@@ -1,0 +1,62 @@
+---
+import { getCollection } from 'astro:content'
+import Layout from '../layouts/Layout.astro'
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .toSorted((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf())
+  .slice(0, 3)
+---
+
+<Layout
+  title="Igor Makowski — mnigos"
+  description="Software engineer building for the web. Portfolio and blog."
+>
+  <section>
+    <h1 class="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+      Igor Makowski
+    </h1>
+    <p class="mt-4 max-w-prose leading-relaxed text-zinc-600 dark:text-zinc-400">
+      Software engineer building for the web with TypeScript, React, and
+      whatever else the problem calls for. Currently working on
+      <a
+        href="https://rigtch.fm"
+        target="_blank"
+        rel="noreferrer"
+        class="font-medium text-zinc-900 underline underline-offset-4 dark:text-zinc-100"
+      >
+        rigtch.fm
+      </a>.
+    </p>
+  </section>
+
+  {
+    posts.length > 0 && (
+      <section class="mt-16">
+        <h2 class="text-sm font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+          Recent posts
+        </h2>
+        <ul class="mt-4 space-y-4">
+          {posts.map(post => (
+            <li>
+              <a href={`/blog/${post.id}`} class="group block">
+                <span class="font-medium text-zinc-900 group-hover:underline group-hover:underline-offset-4 dark:text-zinc-100">
+                  {post.data.title}
+                </span>
+                <time
+                  datetime={post.data.publishedAt.toISOString()}
+                  class="ml-3 text-sm text-zinc-500 dark:text-zinc-400"
+                >
+                  {post.data.publishedAt.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                </time>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</Layout>

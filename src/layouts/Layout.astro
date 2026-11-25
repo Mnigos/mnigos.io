@@ -1,0 +1,64 @@
+---
+import '../styles/global.css'
+
+interface Props {
+  title: string
+  description: string
+}
+
+const { title, description } = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="mnigos.io"
+      href={new URL('rss.xml', Astro.site)}
+    />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <title>{title}</title>
+  </head>
+  <body
+    class="min-h-dvh bg-zinc-50 font-sans text-zinc-800 antialiased dark:bg-zinc-950 dark:text-zinc-200"
+  >
+    <div class="mx-auto flex min-h-dvh max-w-2xl flex-col px-6">
+      <header class="flex items-center justify-between py-8">
+        <a href="/" class="font-mono text-sm font-semibold tracking-tight">
+          mnigos.io
+        </a>
+        <nav class="flex gap-6 text-sm text-zinc-500 dark:text-zinc-400">
+          <a href="/blog" class="hover:text-zinc-900 dark:hover:text-zinc-100">
+            Blog
+          </a>
+          <a
+            href="https://github.com/Mnigos"
+            target="_blank"
+            rel="noreferrer"
+            class="hover:text-zinc-900 dark:hover:text-zinc-100"
+          >
+            GitHub
+          </a>
+        </nav>
+      </header>
+
+      <main class="flex-1 py-8">
+        <slot />
+      </main>
+
+      <footer class="py-8 text-sm text-zinc-500 dark:text-zinc-400">
+        © {new Date().getFullYear()} Igor Makowski
+      </footer>
+    </div>
+  </body>
+</html>
