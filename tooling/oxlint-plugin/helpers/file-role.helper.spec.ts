@@ -18,7 +18,6 @@ describe('toFilePath', () => {
 		expect(toFilePath(filename)).toStrictEqual({
 			path: '/repo/src/modules/blog/domain/post.helper.ts',
 			basename: 'post.helper.ts',
-			directory: '/repo/src/modules/blog/domain',
 		})
 	})
 
@@ -26,7 +25,6 @@ describe('toFilePath', () => {
 		expect(toFilePath(String.raw`C:\repo\src\pages\index.ts`)).toStrictEqual({
 			path: 'C:/repo/src/pages/index.ts',
 			basename: 'index.ts',
-			directory: 'C:/repo/src/pages',
 		})
 	})
 })
