@@ -141,4 +141,144 @@ describe('check-files', () => {
 			stderr: `${path}: name .astro components in kebab-case and keep them in src/modules/<module>/presentation/\n`,
 		})
 	})
+
+	it('rejects tracked text-[13px] with its path and line', () => {
+		writeFixture(
+			'src/modules/blog/presentation/post-card.astro',
+			'<article>\n<p class="text-[13px]">Post</p>\n</article>\n'
+		)
+
+		expect(runCheck()).toStrictEqual({
+			status: 1,
+			stdout: '',
+			stderr:
+				'src/modules/blog/presentation/post-card.astro:2: arbitrary Tailwind class text-[13px], use a theme token from src/styles/global.css\n',
+		})
+	})
+
+	it.each([
+		'max-xs:text-[11.5px]',
+		'grid-cols-[1fr_auto]',
+		'aria-[current=page]:text-ink',
+		'max-xs:nth-[n+3]:border-t',
+		'[&>dd]:pb-3',
+		'[mask-type:alpha]',
+		'bg-(--x)',
+		'text-(color:--ink)',
+		'[@media(hover:hover)]:text-ink',
+	])('rejects %s in Astro class attributes and TypeScript strings', token => {
+		writeFixture(
+			'src/modules/blog/presentation/post-card.astro',
+			`<p class='${token}'>Post</p>\n`
+		)
+		writeFixture(
+			'src/modules/blog/presentation/styles.constants.ts',
+			`\nconst className = "${token}"\n`
+		)
+
+		expect(runCheck()).toStrictEqual({
+			status: 1,
+			stdout: '',
+			stderr:
+				`src/modules/blog/presentation/post-card.astro:1: arbitrary Tailwind class ${token}, use a theme token from src/styles/global.css\n` +
+				`src/modules/blog/presentation/styles.constants.ts:2: arbitrary Tailwind class ${token}, use a theme token from src/styles/global.css\n`,
+		})
+	})
+
+	it('reports each arbitrary class in class:list with its line number', () => {
+		writeFixture(
+			'src/modules/blog/presentation/post-card.astro',
+			'<p class:list={["text-[13px] grid-cols-[1fr_auto]",\n\n\t`[&>dd]:pb-3`]} />\n'
+		)
+
+		expect(runCheck()).toStrictEqual({
+			status: 1,
+			stdout: '',
+			stderr:
+				'src/modules/blog/presentation/post-card.astro:1: arbitrary Tailwind class text-[13px], use a theme token from src/styles/global.css\n' +
+				'src/modules/blog/presentation/post-card.astro:1: arbitrary Tailwind class grid-cols-[1fr_auto], use a theme token from src/styles/global.css\n' +
+				'src/modules/blog/presentation/post-card.astro:3: arbitrary Tailwind class [&>dd]:pb-3, use a theme token from src/styles/global.css\n',
+		})
+	})
+
+	it.each([
+		'const background = backgrounds[level]',
+		'const visibleWeeks = weeks.slice(fromWeek, toWeek)',
+		'const count = toWeek - fromWeek',
+		'const first = items[0]',
+		'type Names = string[]',
+		'const entry = { [key]: value }',
+		`const start = \`\${year}-01-01\``,
+	])('accepts ordinary TypeScript: %s', content => {
+		writeFixture('src/modules/blog/domain/example.helper.ts', `${content}\n`)
+
+		expect(runCheck()).toStrictEqual({ status: 0, stdout: '', stderr: '' })
+	})
+
+	it.each([
+		'text-caption/5.25',
+		'py-3.25',
+		'current-page:text-ink',
+		'max-xs:not-nth-2:border-t',
+	])('accepts the theme class %s in Astro and TypeScript', token => {
+		writeFixture(
+			'src/modules/blog/presentation/post-card.astro',
+			`<p class="${token}">Post</p>\n`
+		)
+		writeFixture(
+			'src/modules/blog/presentation/styles.constants.ts',
+			`const className = '${token}'\n`
+		)
+
+		expect(runCheck()).toStrictEqual({ status: 0, stdout: '', stderr: '' })
+	})
+
+	it.each([
+		[
+			'src/styles/global.css',
+			"@custom-variant x (&[aria-current='page']);\n.text-example { @apply text-[13px]; }\n",
+		],
+		['src/content/blog/post.mdx', '<p class="text-[13px]">Post</p>\n'],
+		['src/content/example.ts', 'const className = "text-[13px]"\n'],
+		[
+			'src/modules/blog/domain/example.helper.spec.ts',
+			'const className = "text-[13px]"\n',
+		],
+		['scripts/example.ts', 'const className = "text-[13px]"\n'],
+	])('does not scan arbitrary classes in %s', (path, content) => {
+		writeFixture(path, content)
+
+		expect(runCheck()).toStrictEqual({ status: 0, stdout: '', stderr: '' })
+	})
+
+	it('ignores arbitrary classes in untracked source files', () => {
+		writeFixture(
+			'src/modules/blog/presentation/post-card.astro',
+			'<p class="text-[13px]">Post</p>\n',
+			false
+		)
+		writeFixture(
+			'src/modules/blog/presentation/styles.constants.ts',
+			'const className = "bg-(--x)"\n',
+			false
+		)
+
+		expect(runCheck()).toStrictEqual({ status: 0, stdout: '', stderr: '' })
+	})
+
+	it('reports component paths, dashes and arbitrary classes together', () => {
+		writeFixture(
+			'src/components/PostCard.astro',
+			`<p class="text-[13px]">Post ${emDash}</p>\n`
+		)
+
+		expect(runCheck()).toStrictEqual({
+			status: 1,
+			stdout: '',
+			stderr:
+				'src/components/PostCard.astro: name .astro components in kebab-case and keep them in src/modules/<module>/presentation/\n' +
+				'src/components/PostCard.astro:1: em dash or en dash\n' +
+				'src/components/PostCard.astro:1: arbitrary Tailwind class text-[13px], use a theme token from src/styles/global.css\n',
+		})
+	})
 })
