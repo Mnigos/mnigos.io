@@ -1,0 +1,123 @@
+---
+title: Why rigtch.fm stores every play itself
+description: The Spotify API returns rankings without play counts and only the last 50 plays. In March 2024 I started saving every play myself.
+publishedAt: 2026-11-25
+tags:
+  - rigtch
+  - spotify
+---
+
+[rigtch.fm](https://rigtch.fm) shows people their Spotify listening statistics.
+From November 2022 until March 2024 it stored no plays. It asked the Spotify Web
+API for a ranking and displayed the response.
+
+On March 20, 2024 I added a table of plays and a scheduler that fills it.
+Everything the app does today reads from that table.
+
+## What Spotify gives you
+
+A stats app can use two endpoints.
+
+"Get User's Top Items" returns up to 50 artists or tracks for one of three time
+ranges. Spotify's docs describe them as approximately the last 4 weeks,
+approximately the last 6 months, and about 1 year of data. The response is an
+ordered list with no play counts.
+
+"Get Recently Played Tracks" returns up to 50 plays, each with a `played_at`
+timestamp. It does not go further back than the last 50 plays, whichever cursor
+you pass.
+
+So I can get my number 1 artist for the last 6 months from the API. I can't get
+how many times I played them, on which days, or who was number 1 in March two
+years ago. From August 2023 the project README said "all-time statistics". The
+data behind that phrase was the one-year ranking.
+
+Only the recently played endpoint returns exact plays, and it returns 50 of
+them. To get exact numbers I had to read that endpoint often enough and save
+every result.
+
+## The first version
+
+The API had been running Postgres since September 2023 for users and tokens, so
+I could store the plays there. On March 20 I added a `HistoryTrack` entity with
+an id, a `playedAt` timestamp, a track and a user. The table still has the
+user, track and `playedAt` columns today.
+
+The scheduler loaded all users when the API started and created one cron job
+for each of them. Every run fetched the last 50 plays from Spotify and saved the
+new ones. This is the cron expression from the first commit:
+
+```ts
+new CronJob(
+  `* ${delayMinutes * this.DELAY_MINUTES || '*'} ${this.INTERVAL_HOURS} * * *`,
+  () => this.triggerFetchingUserHistory(user)
+)
+```
+
+I wanted one run per hour. With `INTERVAL_HOURS = 1`, this expression fires
+every second between 01:00 and 02:00 and at no other time. The next day has
+three commits with a variant of "fix cron time" in the message.
+
+The fixed expression was `0 ${index * 2} */1 * * *`. Each user got a minute
+offset of twice their position in the user list, so the scheduler did not send
+every request to Spotify in the same minute. A cron minute field ends at 59, so
+user number 31 would have produced an invalid expression. Six days later I
+replaced the cron jobs with `setInterval`, one hour apart.
+
+## What broke
+
+The worst bug stayed in the code for four weeks. To know which of the 50 plays
+were new, the code looked for the newest saved play in Spotify's response and
+kept everything above it. If someone played more than 50 tracks between two
+runs, the saved play was not in the response, and `findIndex` returned -1. The
+filter kept the items with an index below -1, which is none of them.
+
+That run saved nothing. Every later run saved nothing too, because that play
+would never appear in the last 50 again. At three minutes a track, 50 plays is
+two and a half hours of listening, so any gap in syncing longer than that could
+stop a user's history permanently.
+
+The fix on April 16 saves all 50 plays when there is no match. Spotify no
+longer returns the plays between the last saved one and those 50, so the app
+never gets them.
+
+The timers were the second problem. They existed only in the memory of the API
+process, so every deploy and every crash cleared them, and the scheduler started
+again from the user list. On May 30 I moved the work to a Bull queue backed by
+Redis, which keeps the jobs when the API restarts.
+
+## What it made possible
+
+On April 23 a "History" page replaced "Recently played" on the frontend. The old
+page stopped at 50 tracks. The new one paginates through every play the app has
+saved.
+
+In early July I added a stats module that computes top tracks, artists, albums
+and genres with SQL over my own table. For the first time each position had a
+play count next to it. Between August and October I added reports with listening
+days, total playtime and total plays.
+
+Leaderboards, listening streaks and yearly reports came later and read the same
+plays. So does the import of Spotify's "extended streaming history" export,
+which adds the years before someone signed up.
+
+## What it costs
+
+Before March 2024 the app had no background work. If the server was down, nobody
+lost anything. Now, if the sync for an account stays broken for longer than 50
+plays, the app loses the plays before those 50. The only way to restore them is
+the user's own export from Spotify.
+
+So the sync is its own module today. It keeps a state per Spotify account,
+claims the accounts that are due under a lease, and records failures such as a
+revoked token or a rate limit. A separate watchdog job checks every connected
+account, because the scheduler's monitor reports only the accounts a run picked
+up. The monitor shows "ok" for every run even when the runs skip the same
+account each time.
+
+Deduplication has two layers. The first is a unique key on user, track and
+`playedAt`. The second compares ISRC codes inside a time window, because one
+recording can exist under more than one Spotify track id.
+
+Every statistic is also my own query now. The rankings Spotify computed for
+free are read models that my API has to build and refresh.
