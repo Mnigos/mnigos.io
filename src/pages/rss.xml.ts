@@ -1,19 +1,18 @@
 import rss from '@astrojs/rss'
-import type { APIContext } from 'astro'
 import { getCollection } from 'astro:content'
 
-export async function GET(context: APIContext) {
-  const posts = await getCollection('blog', ({ data }) => !data.draft)
+export async function GET() {
+	const posts = await getCollection('blog', ({ data }) => !data.draft)
 
-  return rss({
-    title: 'mnigos.io',
-    description: 'Writing about software engineering.',
-    site: context.site!,
-    items: posts.map(post => ({
-      title: post.data.title,
-      description: post.data.description,
-      pubDate: post.data.publishedAt,
-      link: `/blog/${post.id}`,
-    })),
-  })
+	return await rss({
+		title: 'mnigos.io',
+		description: 'Writing about software engineering.',
+		site: import.meta.env.SITE,
+		items: posts.map(post => ({
+			title: post.data.title,
+			description: post.data.description,
+			pubDate: post.data.publishedAt,
+			link: `/blog/${post.id}`,
+		})),
+	})
 }
