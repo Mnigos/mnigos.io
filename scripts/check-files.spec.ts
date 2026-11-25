@@ -170,6 +170,9 @@ describe('check-files', () => {
 		'[:nth-child(3)]:border-t',
 		'[&[hidden]]:block',
 		'[&:not([hidden])]:block',
+		"[&[data-state='open']]:block",
+		'[--layer2:1]',
+		'[--my_color:red]',
 	])('rejects %s in Astro class attributes and TypeScript strings', token => {
 		writeFixture(
 			'src/modules/blog/presentation/post-card.astro',
@@ -211,6 +214,8 @@ describe('check-files', () => {
 		'const count = toWeek - fromWeek',
 		'const first = items[0]',
 		'type Names = string[]',
+		'type Pair = [name: string, age: number]',
+		'const pattern = /[0-9]:[0-9]/u',
 		'const entry = { [key]: value }',
 		`const start = \`\${year}-01-01\``,
 	])('accepts ordinary TypeScript: %s', content => {

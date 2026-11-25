@@ -9,7 +9,10 @@ const ROUTE_PREFIX = 'src/pages/'
 const CLASS_SOURCE_PATTERN = /^src\/(?!content\/).+(?<!\.spec)\.(?:astro|ts)$/u
 /** Matches `text-[13px]`, `bg-(--x)`, any `[...]:` variant such as `[&>dd]:` and `[mask-type:alpha]` inside one class token. */
 const ARBITRARY_CLASS_PATTERN =
-	/[a-z\d]-\[|[a-z\d]-\((?:[a-z-]+:)?--|\[\S*\]:\S|(?:^|:)\[[a-z-]+:/u
+	/[a-z\d]-\[|[a-z\d]-\((?:[a-z-]+:)?--|\[\S*\]:!?-?[a-z@]|(?:^|:)\[-*[a-z][\w-]*:[^\s\]]+\]/u
+/** A class token may hold quotes only inside brackets, as in `[&[data-state='open']]:block`. */
+const CLASS_TOKEN_PATTERN =
+	/(?:[^\s'"`[\]]|\[[^\s[\]]*(?:\[[^\s[\]]*\][^\s[\]]*)*\])+/gu
 
 function getTrackedFiles() {
 	return execFileSync('git', ['ls-files', '-z'], { encoding: 'utf-8' })
@@ -62,8 +65,7 @@ function findArbitraryClasses(path: string) {
 	return readFileSync(path, 'utf-8')
 		.split('\n')
 		.flatMap((line, index) =>
-			line
-				.split(/[\s'"`]+/u)
+			(line.match(CLASS_TOKEN_PATTERN) ?? [])
 				.filter(token => ARBITRARY_CLASS_PATTERN.test(token))
 				.map(
 					token =>
