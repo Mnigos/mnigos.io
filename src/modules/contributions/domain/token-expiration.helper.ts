@@ -6,11 +6,12 @@ const WARNING_DAYS = 14
 
 /** `expiration` is the `github-authentication-token-expiration` header, such as `2026-12-25 00:00:00 UTC` or with a `+0200` offset, absent for tokens that never expire. */
 export function describeTokenExpiration(
+	secret: string,
 	expiration: string | undefined,
 	now: Date
 ) {
 	if (expiration === undefined)
-		return { message: 'GH_CONTRIBUTIONS_TOKEN never expires', warn: false }
+		return { message: `${secret} never expires`, warn: false }
 
 	const match = EXPIRATION_PATTERN.exec(expiration)
 	const zone = match?.[3] ? `${match[3]}:${match[4]}` : 'Z'
@@ -20,7 +21,7 @@ export function describeTokenExpiration(
 
 	if (Number.isNaN(expiresAt))
 		return {
-			message: `GH_CONTRIBUTIONS_TOKEN expiration is unreadable: ${expiration}`,
+			message: `${secret} expiration is unreadable: ${expiration}`,
 			warn: true,
 		}
 
@@ -28,7 +29,7 @@ export function describeTokenExpiration(
 	const warn = daysLeft < WARNING_DAYS
 
 	return {
-		message: `GH_CONTRIBUTIONS_TOKEN expires on ${expiration}, in ${daysLeft} days${warn ? ', rotate it as docs/deploy.md describes' : ''}`,
+		message: `${secret} expires on ${expiration}, in ${daysLeft} days${warn ? ', rotate it as docs/deploy.md describes' : ''}`,
 		warn,
 	}
 }

@@ -19,7 +19,9 @@ describe('describeTokenExpiration', () => {
 	])(
 		'describes $expiration as $days full days left with warn=$warn',
 		({ expiration, days, warn }) => {
-			expect(describeTokenExpiration(expiration, now)).toEqual({
+			expect(
+				describeTokenExpiration('GH_CONTRIBUTIONS_TOKEN', expiration, now)
+			).toEqual({
 				message: `GH_CONTRIBUTIONS_TOKEN expires on ${expiration}, in ${days} days${warn ? ', rotate it as docs/deploy.md describes' : ''}`,
 				warn,
 			})
@@ -27,7 +29,9 @@ describe('describeTokenExpiration', () => {
 	)
 
 	it('does not warn for an absent expiration header', () => {
-		expect(describeTokenExpiration(undefined, now)).toEqual({
+		expect(
+			describeTokenExpiration('GH_CONTRIBUTIONS_TOKEN', undefined, now)
+		).toEqual({
 			message: 'GH_CONTRIBUTIONS_TOKEN never expires',
 			warn: false,
 		})
@@ -40,7 +44,9 @@ describe('describeTokenExpiration', () => {
 		'2026-12-25 25:00:00 UTC',
 		'2026-12-25 00:00:00 +2460',
 	])('warns and echoes the unreadable header %j', expiration => {
-		expect(describeTokenExpiration(expiration, now)).toEqual({
+		expect(
+			describeTokenExpiration('GH_CONTRIBUTIONS_TOKEN', expiration, now)
+		).toEqual({
 			message: `GH_CONTRIBUTIONS_TOKEN expiration is unreadable: ${expiration}`,
 			warn: true,
 		})
