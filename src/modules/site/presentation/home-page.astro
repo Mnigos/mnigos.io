@@ -1,57 +1,115 @@
 ---
-import { formatPostDate, sortNewestFirst } from '../../blog/domain/post.helper'
+import { sortNewestFirst } from '../../blog/domain/post.helper'
 import { getPublishedPosts } from '../../blog/infrastructure/posts.query'
+import ContributionCell from '../../contributions/presentation/contribution-cell.astro'
+import { loadContributionYears } from '../../contributions/infrastructure/contributions.client'
+import { PROFILE } from '../../profile/content/profile.content'
+import { formatFactValue } from '../../profile/domain/profile-format.helper'
+import ProductFacts from '../../profile/presentation/product-facts.astro'
+import { HOME_PAGE } from '../content/home-page.content'
 import Layout from './layout.astro'
+import YearStrip from './year-strip.astro'
 
-const posts = sortNewestFirst(await getPublishedPosts()).slice(0, 3)
+const today = new Date().toISOString().slice(0, 10)
+const contributionYears = await loadContributionYears()
+const posts = sortNewestFirst(await getPublishedPosts()).slice(0, 5)
+
+const newTab = (url: string) =>
+  url.startsWith('https://') ? { target: '_blank', rel: 'noreferrer' } : {}
+
+const sectionHead = 'flex items-baseline justify-between gap-4 border-b-2 border-ink pb-3'
+const sectionLink = 'text-sm text-dim hover:text-accent'
+const row =
+  'grid grid-cols-[1fr_auto] items-baseline gap-x-5 gap-y-1 border-b border-line py-[13px] max-xs:grid-cols-1'
+const rowTitle = 'text-[16.5px] font-semibold hover:text-accent'
+const rowValue = 'whitespace-nowrap text-right text-dim max-xs:text-left'
 ---
 
-<Layout
-  title="Igor Makowski · mnigos"
-  description="Software engineer building for the web. Portfolio and blog."
->
-  <section>
-    <h1 class="heading text-3xl">
-      Igor Makowski
-    </h1>
-    <p class="mt-4 max-w-prose leading-relaxed text-dim">
-      Software engineer building for the web with TypeScript, React, and
-      whatever else the problem calls for. Currently working on{' '}
-      <a
-        href="https://rigtch.fm"
-        target="_blank"
-        rel="noreferrer"
-        class="font-medium text-ink underline decoration-accent decoration-2 underline-offset-4 hover:text-accent"
-      >
-        rigtch.fm
-      </a>.
-    </p>
+<Layout title={HOME_PAGE.title} description={HOME_PAGE.description}>
+  <section class="grid grid-cols-[1fr_auto] items-end gap-x-7 gap-y-3.5 pb-7 max-xs:grid-cols-1">
+    <div class="max-w-[24em] text-[19px] leading-[1.45] text-dim">
+      <h1 class="inline font-bold text-ink">{PROFILE.name}.</h1>{' '}{PROFILE.intro}
+    </div>
+    <div class="flex flex-wrap gap-1.5 pb-[3px]">
+      {
+        PROFILE.links.map(({ label, url }) => (
+          <a
+            href={url}
+            {...newTab(url)}
+            class="border border-line-strong px-[11px] py-[5px] text-[13px] font-medium text-ink hover:border-accent hover:text-accent"
+          >
+            {label}
+          </a>
+        ))
+      }
+    </div>
   </section>
 
-  {
-    posts.length > 0 && (
-      <section class="mt-16">
-        <h2 class="heading text-sm uppercase text-dim">
-          Recent posts
-        </h2>
-        <ul class="mt-4 space-y-4">
-          {posts.map(post => (
-            <li>
-              <a href={`/blog/${post.id}`} class="group block">
-                <span class="font-semibold group-hover:text-accent">
-                  {post.data.title}
-                </span>
-                <time
-                  datetime={post.data.publishedAt.toISOString()}
-                  class="numeric ml-3 text-sm text-dim"
-                >
-                  {formatPostDate(post.data.publishedAt, 'short')}
-                </time>
-              </a>
+  <section aria-label={HOME_PAGE.contributions.label} class="grid gap-4">
+    {
+      contributionYears.toReversed().map(contributionYear => (
+        <YearStrip contributionYear={contributionYear} today={today} />
+      ))
+    }
+  </section>
+  <div
+    class="mt-3.5 ml-[74px] flex items-center gap-[5px] text-[12.5px] text-faint max-xs:ml-0"
+  >
+    <span>{HOME_PAGE.contributions.less}</span>
+    {[0, 1, 2, 3, 4, 5].map(level => <ContributionCell level={level} class="w-2.5" />)}
+    <span>{HOME_PAGE.contributions.more}</span>
+    <span class="ml-auto max-xs:hidden">{HOME_PAGE.contributions.note}</span>
+  </div>
+
+  <div class="mt-[34px]">
+    <ProductFacts product={PROFILE.product} />
+  </div>
+
+  <section class="mt-11">
+    <div class={sectionHead}>
+      <h2 class="heading text-[21px] leading-[1.1]">{HOME_PAGE.openSource.heading}</h2>
+      <a href={PROFILE.openSource.link.url} {...newTab(PROFILE.openSource.link.url)} class={sectionLink}>
+        {PROFILE.openSource.link.label}<span aria-hidden="true"> ↗</span>
+      </a>
+    </div>
+    <ul>
+      {
+        PROFILE.openSource.projects.map(({ name, note, url, fact }) => (
+          <li class={row}>
+            <span>
+              <a href={url} {...newTab(url)} class={rowTitle}>{name}</a>
+              {note && <small class="mt-px block text-[14.5px] text-dim">{note}</small>}
+            </span>
+            <span class:list={[rowValue, 'text-[14.5px]']}>
+              <b class="numeric mr-1 text-[17px] font-bold text-accent">
+                {formatFactValue(fact.value)}
+              </b>
+              {fact.label}
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="mt-11">
+    <div class={sectionHead}>
+      <h2 class="heading text-[21px] leading-[1.1]">{HOME_PAGE.blog.heading}</h2>
+      <a href="/blog" class={sectionLink}>{HOME_PAGE.blog.allPosts}</a>
+    </div>
+    <ul>
+      {
+        posts.map(post => {
+          const date = post.data.publishedAt.toISOString().slice(0, 10)
+
+          return (
+            <li class={row}>
+              <a href={`/blog/${post.id}`} class={rowTitle}>{post.data.title}</a>
+              <time datetime={date} class:list={[rowValue, 'numeric text-[13.5px]']}>{date}</time>
             </li>
-          ))}
-        </ul>
-      </section>
-    )
-  }
+          )
+        })
+      }
+    </ul>
+  </section>
 </Layout>
