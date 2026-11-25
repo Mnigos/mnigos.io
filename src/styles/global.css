@@ -38,6 +38,8 @@
 	--text-base--line-height: 1.55;
 	--text-title: 1.03125rem;
 	--text-title--line-height: 1.55;
+	--text-title-compact: 0.9375rem;
+	--text-title-compact--line-height: 1.55;
 	--text-copy: 1.0625rem;
 	--text-copy--line-height: 1.55;
 	--text-lede: 1.1875rem;
@@ -70,11 +72,24 @@
 	--container-post-title: 15em;
 
 	--breakpoint-xs: 35rem;
+
+	--spacing-header: 1.125rem;
+	--spacing-header-compact: 0.5625rem;
+
+	--header-scroll-range: 5.625rem;
+	--header-logo-compact: 1.25rem;
 }
 
 @custom-variant current-page (&[aria-current='page']);
 @custom-variant term (& > dt);
 @custom-variant description (& > dd);
+@custom-variant scroll-driven {
+	@media screen {
+		@supports (animation-timeline: scroll()) {
+			@slot;
+		}
+	}
+}
 
 /** The Shiki theme builds these names at runtime, so Tailwind cannot see them in use. */
 @theme static {
@@ -155,10 +170,98 @@
 	}
 }
 
+@utility sticky-header {
+	@media screen {
+		position: sticky;
+		top: 0;
+		z-index: 1;
+		background: var(--color-bg);
+	}
+
+	@variant scroll-driven {
+		/* Longhands, because Lightning CSS folds animation-timeline into the animation shorthand and browsers drop that. */
+		@variant motion-safe {
+			animation-name: header-padding-compact;
+			animation-timing-function: linear;
+			animation-fill-mode: both;
+			animation-timeline: scroll(root);
+			animation-range: 0 var(--header-scroll-range);
+		}
+
+		&::after {
+			content: '';
+			position: absolute;
+			inset-inline: 0;
+			bottom: calc(var(--spacing) * -1);
+			height: calc(var(--spacing) * 1.5);
+			pointer-events: none;
+			background: url('./link-stroke.svg') left center / 100% 100% no-repeat;
+			clip-path: inset(0 100% 0 0);
+			animation-name: scroll-progress;
+			animation-timing-function: linear;
+			animation-fill-mode: both;
+			animation-timeline: scroll(root);
+		}
+	}
+}
+
+@utility header-brand {
+	@variant scroll-driven {
+		@variant motion-safe {
+			animation-name: header-brand-compact;
+
+			& svg {
+				animation-name: header-logo-compact;
+			}
+
+			&,
+			& svg {
+				animation-timing-function: linear;
+				animation-fill-mode: both;
+				animation-timeline: scroll(root);
+				animation-range: 0 var(--header-scroll-range);
+			}
+		}
+	}
+}
+
+@keyframes header-padding-compact {
+	to {
+		padding-block: var(--spacing-header-compact);
+		/* The margin keeps the page below still, so scroll anchoring stays idle. */
+		margin-bottom: calc(
+			(var(--spacing-header) - var(--spacing-header-compact)) * 2
+		);
+	}
+}
+
+@keyframes header-brand-compact {
+	to {
+		font-size: var(--text-title-compact);
+	}
+}
+
+@keyframes header-logo-compact {
+	to {
+		height: var(--header-logo-compact);
+	}
+}
+
+@keyframes scroll-progress {
+	to {
+		clip-path: inset(0);
+	}
+}
+
 @layer base {
 	html {
 		color-scheme: dark;
 		background: var(--color-bg);
+		scroll-padding-top: calc(var(--spacing) * 31);
+
+		@variant xs {
+			scroll-padding-top: calc(var(--spacing) * 22);
+		}
 	}
 
 	body {
