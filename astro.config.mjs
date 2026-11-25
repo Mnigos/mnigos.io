@@ -4,7 +4,10 @@ import { defineConfig, fontProviders } from 'astro/config'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 import tailwindcss from '@tailwindcss/vite'
-import { codeTheme } from './src/modules/blog/presentation/code-theme.config'
+import {
+	codeTheme,
+	constructorTypes,
+} from './src/modules/blog/presentation/code-theme.config'
 
 // https://astro.build/config
 export default defineConfig({
@@ -37,7 +40,7 @@ export default defineConfig({
 	],
 
 	markdown: {
-		shikiConfig: { theme: codeTheme },
+		shikiConfig: { theme: codeTheme, transformers: [constructorTypes] },
 	},
 
 	integrations: [mdx(), sitemap()],
