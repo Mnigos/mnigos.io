@@ -1,0 +1,30 @@
+---
+interface Props {
+  heading: string
+  url?: string
+  aside: string
+  subheading?: string
+}
+
+const { heading, url, aside, subheading } = Astro.props
+---
+
+<section class="mt-[38px] border-t-2 border-ink pt-[18px]">
+  <div class="grid grid-cols-[1fr_auto] items-baseline gap-x-5 gap-y-0.5">
+    <h2 class="heading text-[27px] leading-[1.1]">
+      {
+        url ? (
+          <a href={url} target="_blank" rel="noreferrer" class="hover:text-accent">
+            {heading}
+            <span aria-hidden="true"> ↗</span>
+          </a>
+        ) : (
+          heading
+        )
+      }
+    </h2>
+    <span class="numeric text-[13.5px] whitespace-nowrap text-dim">{aside}</span>
+    {subheading && <span class="col-span-full text-[16.5px] text-dim">{subheading}</span>}
+  </div>
+  <slot />
+</section>
