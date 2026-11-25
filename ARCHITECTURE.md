@@ -27,6 +27,10 @@ Outside `src/modules/`, `src/` holds only `src/content.config.ts` with its spec,
 4. `presentation/` renders it: `.astro` components wrap the content in `site/presentation/layout.astro`, and `blog/presentation/rss.handler.ts` builds the feed. Code blocks are highlighted at build time by Shiki with `blog/presentation/code-theme.config.ts`, whose colours are the site's CSS variables.
 5. `src/pages/` maps each URL to one of those components or handlers, and `astro build` writes static HTML, `rss.xml` and the sitemap into `dist/`.
 
+## Link previews
+
+Every page passes its title, description and preview image path to the layout, which emits the canonical, Open Graph and X card tags from `link-preview/domain/page-meta.helper.ts`. `src/pages/og/[...slug].png.ts` renders one 1200x630 PNG per page and published post with satori and resvg, reading the committed static fonts in `link-preview/infrastructure/fonts/` (Martian Mono Condensed ExtraBold and Archivo Regular, OFL), the colors from `global.css` and the logo from `public/favicon.svg`.
+
 ## Contribution data
 
 The home page grid and the yearly totals show GitHub and GitLab contributions added per day. `loadContributionYears` in `contributions/infrastructure/contributions.client.ts` is the only place that combines them, so every page that reads it gets the combined numbers.
