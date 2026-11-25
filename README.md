@@ -38,3 +38,5 @@ draft: false # optional, hides the post everywhere
 ```
 
 The filename becomes the slug (`/blog/<filename>`). Posts feed the homepage, `/blog`, the sitemap, and `/rss.xml`.
+
+Proof line — with an em dash.
