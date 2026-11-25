@@ -29,7 +29,7 @@ Outside `src/modules/`, `src/` holds only `src/content.config.ts` with its spec,
 
 ## Link previews
 
-Every page passes its title, description and preview image path to the layout, which emits the canonical, Open Graph and X card tags from `link-preview/domain/page-meta.helper.ts`. `src/pages/og/[...slug].png.ts` renders one 1200x630 PNG per page and published post with satori and resvg, reading the committed static fonts in `link-preview/infrastructure/fonts/` (Martian Mono Condensed ExtraBold and Regular, Archivo Regular, OFL), the colors from `global.css` and the logo from `public/favicon.svg`. The home and work images end with the last 26 weeks of contributions, on the work page's weekly scale.
+Every page passes its title, description and preview image path to the layout, which emits the canonical, Open Graph and X card tags from `link-preview/domain/page-meta.helper.ts`. `src/pages/og/[...slug].png.ts` renders one 1200x630 PNG per page and published post with satori and resvg, reading the committed static fonts in `link-preview/infrastructure/fonts/` (Martian Mono Condensed ExtraBold and Regular, Archivo Regular, OFL), the colors from `global.css` and the logo from `public/favicon.svg`. The home and work images end with the last 26 weeks of contributions from the committed snapshots, on the work page's weekly scale.
 
 ## Contribution data
 
