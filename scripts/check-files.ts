@@ -9,7 +9,7 @@ const ROUTE_PREFIX = 'src/pages/'
 const CLASS_SOURCE_PATTERN = /^src\/(?!content\/).+(?<!\.spec)\.(?:astro|ts)$/u
 /** Matches `text-[13px]`, `bg-(--x)`, any `[...]:` variant such as `[&>dd]:` and `[mask-type:alpha]` inside one class token. */
 const ARBITRARY_CLASS_PATTERN =
-	/[a-z\d]-\[|[a-z\d]-\((?:[a-z-]+:)?--|\[[^\]]+\]:\S|(?:^|:)\[[a-z-]+:/u
+	/[a-z\d]-\[|[a-z\d]-\((?:[a-z-]+:)?--|\[\S*\]:\S|(?:^|:)\[[a-z-]+:/u
 
 function getTrackedFiles() {
 	return execFileSync('git', ['ls-files', '-z'], { encoding: 'utf-8' })
