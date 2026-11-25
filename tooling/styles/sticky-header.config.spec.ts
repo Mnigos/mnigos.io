@@ -72,11 +72,9 @@ describe('sticky header contract', () => {
 	})
 
 	it('reveals the stroke over the full root scroll even with reduced motion', () => {
-		const urls = (header + brand).matchAll(/url\(['"]?([^'"()]+)['"]?\)/gu)
-		expect([...urls].map(match => match[1])).toEqual(['./link-stroke.svg'])
-		expect(progress).toContain('./link-stroke.svg')
+		expect(progress).toContain('@applylink-stroke;')
 		expect(header + brand).not.toMatch(
-			/data:|<svg\b|image(?:-set)?\(|gradient\(/u
+			/url\(|data:|<svg\b|image(?:-set)?\(|gradient\(/u
 		)
 		expect(progress).not.toMatch(/@variant|animation-range[\w-]*:/u)
 		expect(progress).toContain('clip-path:inset(0100%00);')
