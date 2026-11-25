@@ -207,7 +207,8 @@
 			bottom: calc(var(--spacing) * -1);
 			height: calc(var(--spacing) * 1.5);
 			pointer-events: none;
-			background: url('./link-stroke.svg') left center / 100% 100% no-repeat;
+			@apply link-stroke;
+			background-size: 100% 100%;
 			clip-path: inset(0 100% 0 0);
 			animation-name: scroll-progress;
 			animation-timing-function: linear;
