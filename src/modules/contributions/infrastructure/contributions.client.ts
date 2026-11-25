@@ -6,6 +6,9 @@ import { env } from './contributions.config'
 import gitLabEvents from './gitlab-events.snapshot.json'
 
 const FIRST_YEAR = 2021
+const TOKEN_EXPIRATION_HEADER = 'github-authentication-token-expiration'
+const TOKEN_REJECTED =
+	'GitHub rejected GH_CONTRIBUTIONS_TOKEN. Create a classic token with the read:user scope, store it with `gh secret set GH_CONTRIBUTIONS_TOKEN --repo Mnigos/mnigos.io`, then rerun the workflow (docs/deploy.md)'
 const CALENDAR_QUERY = `query ($from: DateTime!, $to: DateTime!) {
 	viewer {
 		contributionsCollection(from: $from, to: $to) {
@@ -42,7 +45,9 @@ function describeFailure(error: unknown) {
 		error.response &&
 		'status' in error
 	)
-		return `HTTP ${String(error.status)}`
+		return error.status === 401
+			? `HTTP 401, ${TOKEN_REJECTED}`
+			: `HTTP ${String(error.status)}`
 	return String(error)
 }
 
@@ -80,20 +85,34 @@ async function fetchContributionYear(
 	return { year, total: calendar.totalContributions, counts }
 }
 
-/** One calendar year per request, from 2021 to the current year. */
+/** One calendar year per request, from 2021 to the current year, with the token's expiration header if GitHub sent one. */
 export async function fetchContributionYears(token: string) {
 	const years = Array.from(
 		{ length: new Date().getUTCFullYear() - FIRST_YEAR + 1 },
 		(_, index) => FIRST_YEAR + index
 	)
+	const expirations: (string | undefined)[] = []
 
 	const request = graphql.defaults({
 		headers: { authorization: `bearer ${token}` },
+		request: {
+			fetch: async (...args: Parameters<typeof fetch>) => {
+				const response = await fetch(...args)
+
+				expirations.push(
+					response.headers.get(TOKEN_EXPIRATION_HEADER) ?? undefined
+				)
+				return response
+			},
+		},
 	})
 
-	return await Promise.all(
-		years.map(async year => await fetchContributionYear(year, request))
-	)
+	return {
+		years: await Promise.all(
+			years.map(async year => await fetchContributionYear(year, request))
+		),
+		tokenExpiration: expirations[0],
+	}
 }
 
 /** GitHub contributions plus the GitLab snapshot per day. Fetches from GitHub when `GH_CONTRIBUTIONS_TOKEN` is set, so a failing fetch fails the build; otherwise reads the committed snapshot. */
@@ -109,7 +128,7 @@ export async function loadContributionYears(): Promise<ContributionYear[]> {
 		return addGitLabContributions(snapshot.years, gitLabEvents.days)
 	}
 
-	const years = await fetchContributionYears(token)
+	const { years } = await fetchContributionYears(token)
 
 	console.info(
 		`Contributions: fetched from GitHub, ${years.map(({ year, total }) => `${year}: ${total}`).join(', ')}`
