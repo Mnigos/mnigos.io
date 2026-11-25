@@ -115,17 +115,27 @@ export async function fetchContributionYears(token: string) {
 	}
 }
 
+/** The committed GitHub snapshot plus the GitLab snapshot per day, without any request. */
+export async function loadSnapshotContributionYears() {
+	const { default: snapshot } = await import('./contributions.snapshot.json')
+
+	return {
+		generatedAt: snapshot.generatedAt,
+		years: addGitLabContributions(snapshot.years, gitLabEvents.days),
+	}
+}
+
 /** GitHub contributions plus the GitLab snapshot per day. Fetches from GitHub when `GH_CONTRIBUTIONS_TOKEN` is set, so a failing fetch fails the build; otherwise reads the committed snapshot. */
 export async function loadContributionYears(): Promise<ContributionYear[]> {
 	const token = env.GH_CONTRIBUTIONS_TOKEN
 
 	if (!token) {
-		const { default: snapshot } = await import('./contributions.snapshot.json')
+		const { generatedAt, years } = await loadSnapshotContributionYears()
 
 		console.info(
-			`Contributions: GH_CONTRIBUTIONS_TOKEN is not set, using the snapshot generated at ${snapshot.generatedAt}`
+			`Contributions: GH_CONTRIBUTIONS_TOKEN is not set, using the snapshot generated at ${generatedAt}`
 		)
-		return addGitLabContributions(snapshot.years, gitLabEvents.days)
+		return years
 	}
 
 	const { years } = await fetchContributionYears(token)
