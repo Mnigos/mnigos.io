@@ -1,0 +1,55 @@
+name: Refresh contributions
+
+on:
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# A second run waits for the first instead of cancelling it, so a push never stops halfway.
+concurrency:
+  group: refresh-contributions
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: Refresh the contribution snapshot
+    # A manual run from another branch would rebase that branch onto main and push it.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SNAPSHOT: src/modules/contributions/infrastructure/contributions.snapshot.json
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
+      - run: bun install --frozen-lockfile
+      - run: bun run contributions:refresh
+        env:
+          GH_CONTRIBUTIONS_TOKEN: ${{ secrets.GH_CONTRIBUTIONS_TOKEN }}
+      - id: snapshot
+        run: git diff --quiet -- "$SNAPSHOT" || echo 'changed=true' >> "$GITHUB_OUTPUT"
+      # A push with GITHUB_TOKEN starts no CI run, so the checks run here before the commit.
+      - if: steps.snapshot.outputs.changed == 'true'
+        run: bun run astro sync && bun run check && bun run test
+      - if: steps.snapshot.outputs.changed == 'true'
+        # The write token reaches git only here, after the install, the refresh and the tests ran.
+        run: |
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit --quiet --message 'chore(contributions): refresh the GitHub contribution snapshot' -- "$SNAPSHOT"
+          for attempt in 1 2; do
+            git pull --rebase --quiet origin main && git push origin HEAD:main && exit 0
+            echo "Push attempt $attempt failed"
+          done
+          exit 1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
