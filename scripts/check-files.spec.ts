@@ -166,6 +166,8 @@ describe('check-files', () => {
 		'bg-(--x)',
 		'text-(color:--ink)',
 		'[@media(hover:hover)]:text-ink',
+		'[p]:text-ink',
+		'[:nth-child(3)]:border-t',
 	])('rejects %s in Astro class attributes and TypeScript strings', token => {
 		writeFixture(
 			'src/modules/blog/presentation/post-card.astro',
