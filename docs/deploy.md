@@ -53,7 +53,45 @@ When GitHub rejects the token with HTTP 401, the run fails with a message that n
 
 A Preview gets its own URL, `<preview-name>-mnigos-io.<subdomain>.workers.dev`, where the preview name comes from the branch. `wrangler preview` refuses to run without a `previews` block in `wrangler.jsonc`, so the file keeps an empty one. Assets and the compatibility date stay at the top level and apply to Previews too.
 
-`public/_headers` sends `X-Robots-Tag: noindex` on every `https://:version.:subdomain.workers.dev/*` URL. Astro copies it into `dist/`, and Cloudflare applies it to every asset response. Every `workers.dev` hostname of this Worker has two labels before `workers.dev` (production, Previews, version and deployment URLs alike), so this one rule keeps all of them out of search results. The custom domain does not match the rule and stays indexable.
+`public/_headers` sends `X-Robots-Tag: noindex` on every `https://:version.:subdomain.workers.dev/*` URL. Astro copies it into `dist/`, and Cloudflare applies it to every asset response. Every `workers.dev` hostname of this Worker has two labels before `workers.dev` (production, Previews, version and deployment URLs alike), so this one rule keeps all of them out of search results. `mnigos.io` and `www.mnigos.io` do not match the rule and stay indexable.
+
+## Domain
+
+`mnigos.io` and `www.mnigos.io` are Custom Domains of the Worker, listed under `routes` in `wrangler.jsonc` with `custom_domain: true`. Cloudflare keeps a proxied DNS record for each one and issues its certificate. Every `wrangler deploy` sends the whole list and detaches any Custom Domain of this Worker that the list no longer names, so `wrangler.jsonc` is the source of truth. A deploy from a config without any `routes` leaves the attached domains alone.
+
+Declaring routes switches `workers.dev` off by default, so the file sets `workers_dev` and `preview_urls` to `true`. The production `workers.dev` URL and the Previews stay as they were.
+
+A Custom Domain cannot share its hostname with another DNS record. The dashboard refuses while such a record exists, and an interactive `wrangler deploy` asks first. Without a terminal, as in Workers Builds, Wrangler asks Cloudflare to replace the record, but the Workers Builds token has no DNS permission, so that path is untested. To add a hostname that has a record, delete the record and add the Custom Domain in the dashboard right after, then list it in `wrangler.jsonc`.
+
+### www and plain HTTP
+
+One Single Redirect rule in the zone, under Rules, Redirect Rules, sends `www` and plain HTTP to the canonical address. It lives in Cloudflare, not in this repository.
+
+| Field        | Value                                                                      |
+| ------------ | -------------------------------------------------------------------------- |
+| Name         | `mnigos.io canonical host`                                                 |
+| Expression   | `(http.host eq "www.mnigos.io") or (http.host eq "mnigos.io" and not ssl)` |
+| Target URL   | `concat("https://mnigos.io", http.request.uri.path)`                       |
+| Status       | 301                                                                        |
+| Query string | preserved                                                                  |
+
+Redirect rules run before the request reaches the Worker, because a Worker on a Custom Domain is the origin for its hostname. The zone setting Always Use HTTPS stays off, so the rule covers plain HTTP for these two hostnames only and `http://www` reaches `https://mnigos.io` in one hop.
+
+### Mail and other records
+
+Mail runs through OVH: the MX records and the SPF record do not depend on the site's records and do not change with it. `ftp.mnigos.io` is a CNAME of the apex and follows it to Cloudflare, where nothing answers for it. `winyle.mnigos.io` belongs to another project.
+
+### Detaching the domain
+
+To take the site off the domain and bring back the OVH parking page:
+
+1. Remove the two `routes` entries from `wrangler.jsonc` and push to `main`. The deploy leaves the attached domains alone, but no later deploy attaches them again. Wait until this build succeeds and no older production build is queued or running under Workers & Pages, `mnigos-io`, Deployments, because an older build still has the routes and would attach the domains again over the restored records.
+2. In the dashboard, open Workers & Pages, `mnigos-io`, Settings, Domains & Routes, and remove `mnigos.io` and `www.mnigos.io`. Cloudflare deletes the DNS records it created for them; check under DNS, Records that neither hostname has a record left.
+3. Under DNS, Records, add an `A` record for `mnigos.io` and one for `www.mnigos.io`, both `213.186.33.5`, DNS only, TTL Auto.
+4. Delete the redirect rule `mnigos.io canonical host`.
+5. Under SSL/TLS, Edge Certificates, delete the certificates Cloudflare ordered for the two hostnames; removing a Custom Domain does not delete them.
+
+Steps 2 and 3 follow each other within a minute, since the hostnames do not resolve in between.
 
 ## Missing pages
 
