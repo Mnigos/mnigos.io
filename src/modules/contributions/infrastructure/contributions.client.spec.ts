@@ -1,9 +1,39 @@
 import { inspect } from 'node:util'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { ContributionYear } from '../domain/contribution.types'
 import { fetchContributionYears } from './contributions.client'
 import snapshot from './contributions.snapshot.json'
+import gitLabEvents from './gitlab-events.snapshot.json'
 
 const token = 'test-token-123'
+const gitLabYearTotals: Readonly<Record<number, number>> = {
+	2021: 719,
+	2022: 6675,
+	2023: 2649,
+	2024: 23,
+}
+const gitLabDailyCounts = new Map(
+	Object.entries(gitLabEvents.days).map(([date, counts]) => [
+		date,
+		counts[1] + counts[2] + counts[4] + counts[5],
+	])
+)
+
+function expectedCombinedYear(gitHubYear: ContributionYear) {
+	const { year, total, counts } = gitHubYear
+
+	return {
+		year,
+		total: total + (gitLabYearTotals[year] ?? 0),
+		counts: counts.map((count, index) => {
+			const date = new Date(Date.UTC(year, 0, index + 1))
+				.toISOString()
+				.slice(0, 10)
+
+			return count + (gitLabDailyCounts.get(date) ?? 0)
+		}),
+	}
+}
 
 function calendarResponse(year: number) {
 	return {
@@ -224,7 +254,13 @@ describe('loadContributionYears', () => {
 				.mockRejectedValue(new Error('Unexpected network request'))
 			vi.stubGlobal('fetch', fetchMock)
 
-			expect(await loadContributionYears()).toEqual(snapshot.years)
+			const years = await loadContributionYears()
+
+			expect(years).toEqual(snapshot.years.map(expectedCombinedYear))
+			expect(years.find(({ year }) => year === 2022)?.counts[31]).toBe(
+				(snapshot.years.find(({ year }) => year === 2022)?.counts[31] ?? 0) +
+					249
+			)
 			expect(fetchMock).not.toHaveBeenCalled()
 			expect(console.info).toHaveBeenCalledTimes(1)
 			const [line] = vi.mocked(console.info).mock.calls
@@ -240,17 +276,22 @@ describe('loadContributionYears', () => {
 		const years = await loadContributionYears()
 
 		expect(fetchMock).toHaveBeenCalledTimes(6)
-		expect(years.map(({ year, total }) => ({ year, total }))).toEqual(
-			[2021, 2022, 2023, 2024, 2025, 2026].map(year => ({
-				year,
-				total: year * 10,
-			}))
-		)
+		const gitHubYears = [2021, 2022, 2023, 2024, 2025, 2026].map(year => {
+			const counts = Array.from({ length: year === 2024 ? 366 : 365 }, () => 0)
+			counts[0] = 4
+			if (year === 2024) counts[59] = 13
+			counts[year === 2024 ? 60 : 59] = 9
+			counts[counts.length - 1] = 31
+
+			return { year, total: year * 10, counts }
+		})
+		expect(years).toEqual(gitHubYears.map(expectedCombinedYear))
+		expect(years.find(({ year }) => year === 2022)?.counts[31]).toBe(249)
 		expect(console.info).toHaveBeenCalledTimes(1)
 		const [line] = vi.mocked(console.info).mock.calls
 		expect(line).toHaveLength(1)
-		expect(String(line?.[0])).toMatch(/fetched/iu)
-		for (const { year, total } of years)
+		expect(String(line?.[0])).toMatch(/fetched from GitHub/u)
+		for (const { year, total } of gitHubYears)
 			expect(String(line?.[0])).toContain(`${year}: ${total}`)
 		expect(JSON.stringify(years)).not.toContain(token)
 	})
