@@ -19,6 +19,10 @@ Personal portfolio and blog. Built with [Astro](https://astro.build), Tailwind C
 | `bun run preview`   | Preview the production build         |
 | `bun run typecheck` | Run `astro check`                    |
 
+## Contributions
+
+The build reads the GitHub contribution calendar from `src/modules/contributions/`. With `GH_CONTRIBUTIONS_TOKEN` set it fetches the calendar from the GitHub GraphQL API and fails if the fetch fails. Without it, it reads the committed snapshot. Refresh the snapshot with `GH_CONTRIBUTIONS_TOKEN=$(gh auth token) bun run contributions:refresh`.
+
 ## Writing a post
 
 Add an `.mdx` (or `.md`) file to `src/content/blog/` with frontmatter:

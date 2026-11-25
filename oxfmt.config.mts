@@ -12,4 +12,9 @@ export default defineConfig({
 	sortImports: { newlinesBetween: false, partitionByNewline: true },
 	sortTailwindcss: { stylesheet: './src/styles/global.css' },
 	overrides: [{ files: ['**/*.json'], options: { useTabs: false } }],
+	ignorePatterns: [
+		...(ultracite.ignorePatterns ?? []),
+		// Written by the contributions refresh script, one line per year.
+		'src/modules/contributions/infrastructure/contributions.snapshot.json',
+	],
 })
