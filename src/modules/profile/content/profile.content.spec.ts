@@ -12,6 +12,13 @@ function* stringsIn(value: unknown): Generator<string> {
 }
 
 describe('PROFILE', () => {
+	test('keeps the approved work intro and weekly strip legend', () => {
+		expect(PROFILE.work).toStrictEqual({
+			intro: 'My own product first, then the jobs, newest first.',
+			weeklyStripLegend: 'One square is one week of my GitHub contributions.',
+		})
+	})
+
 	test('limits the Ludus AI job to the approved public fields', () => {
 		expect(PROFILE.jobs.find(job => job.company === 'Ludus AI')).toStrictEqual({
 			company: 'Ludus AI',
