@@ -1,6 +1,94 @@
 import { describe, expect, test } from 'vitest'
 import { PROFILE } from '../content/profile.content'
-import { profileSchema, type Profile } from './profile.schemas'
+import { productSchema, profileSchema, type Profile } from './profile.schemas'
+
+describe('productSchema', () => {
+	test('accepts and preserves the page facts and history including the optional post link', () => {
+		const result = productSchema.safeParse(PROFILE.product)
+
+		expect(result.success).toBe(true)
+		expect(result.data).toStrictEqual(PROFILE.product)
+	})
+
+	test.each(['pageFacts', 'history'] as const)('rejects missing %s', field => {
+		const product = structuredClone(PROFILE.product)
+		Reflect.deleteProperty(product, field)
+
+		const result = productSchema.safeParse(product)
+
+		expect(result.success).toBe(false)
+		expect(result.error?.issues.map(issue => issue.path)).toContainEqual([
+			field,
+		])
+	})
+
+	test.each(['', '2024-00', '2024-13', '2024-3', '2024-03-01'])(
+		'rejects invalid history month %j',
+		value => {
+			const product = structuredClone(PROFILE.product)
+			product.history[1].month.value = value
+
+			const result = productSchema.safeParse(product)
+
+			expect(result.success).toBe(false)
+			expect(result.error?.issues.map(issue => issue.path)).toContainEqual([
+				'history',
+				1,
+				'month',
+				'value',
+			])
+		}
+	)
+
+	test.each(['source', 'checkedOn'] as const)(
+		'rejects a history month without %s',
+		field => {
+			const product = structuredClone(PROFILE.product)
+			Reflect.deleteProperty(product.history[0].month, field)
+
+			const result = productSchema.safeParse(product)
+
+			expect(result.success).toBe(false)
+			expect(result.error?.issues.map(issue => issue.path)).toContainEqual([
+				'history',
+				0,
+				'month',
+				field,
+			])
+		}
+	)
+
+	test('rejects an invalid month in the product page facts', () => {
+		const product = structuredClone(PROFILE.product)
+		product.pageFacts[2].value = '2024-13'
+
+		const result = productSchema.safeParse(product)
+
+		expect(result.success).toBe(false)
+		expect(result.error?.issues.map(issue => issue.path)).toContainEqual([
+			'pageFacts',
+			2,
+			'value',
+		])
+	})
+
+	test.each(['title', 'text', 'postId'] as const)(
+		'rejects empty history %s',
+		field => {
+			const product = structuredClone(PROFILE.product)
+			product.history[1][field] = ''
+
+			const result = productSchema.safeParse(product)
+
+			expect(result.success).toBe(false)
+			expect(result.error?.issues.map(issue => issue.path)).toContainEqual([
+				'history',
+				1,
+				field,
+			])
+		}
+	)
+})
 
 describe('profileSchema', () => {
 	test('accepts PROFILE', () => {
