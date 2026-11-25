@@ -91,9 +91,15 @@ describe('WEEKLY_THRESHOLDS', () => {
 		[46, 3],
 		[100, 3],
 		[101, 4],
-		[220, 4],
-		[221, 5],
-		[1_000_000, 5],
+		[170, 4],
+		[171, 5],
+		[250, 5],
+		[251, 6],
+		[400, 6],
+		[401, 7],
+		[600, 7],
+		[601, 8],
+		[1_000_000, 8],
 	])('maps weekly total %i to level %i', (total, expected) => {
 		expect(getContributionLevel(total, WEEKLY_THRESHOLDS)).toBe(expected)
 	})

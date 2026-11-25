@@ -5,8 +5,11 @@ export interface ContributionYear {
 	counts: number[]
 }
 
-/** Lower bounds of levels 1 to 5; a count below the first is level 0. */
+/** Lower bounds of levels 1 to 8; a count below the first is level 0. */
 export type ContributionLevelThresholds = readonly [
+	number,
+	number,
+	number,
 	number,
 	number,
 	number,
