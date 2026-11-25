@@ -2,7 +2,7 @@ import { PREVIEW_IMAGE } from './preview-image.constants'
 
 /** Advance width of every Martian Mono glyph, in em. */
 const GLYPH_ADVANCE = 0.6
-const TITLE_WIDTH = PREVIEW_IMAGE.width - 2 * PREVIEW_IMAGE.padding
+const TITLE_WIDTH = PREVIEW_IMAGE.width - 2 * PREVIEW_IMAGE.padding.x
 const { maxHeight, lineHeight, letterSpacing } = PREVIEW_IMAGE.title
 
 export interface PreviewTitleFit {
