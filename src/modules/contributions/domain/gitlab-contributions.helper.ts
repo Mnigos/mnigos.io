@@ -6,9 +6,29 @@ import type {
 import { getDayOfYear } from './iso-date.helper'
 
 export function getGitLabContributionCount(events: GitLabEventCounts) {
-	const [, commits, mergeRequestsOpened, , approvals, issuesOpened] = events
+	const [
+		pushes,
+		,
+		mergeRequestsOpened,
+		mergeRequestsMerged,
+		approvals,
+		issuesOpened,
+		issuesClosed,
+		comments,
+		,
+		other,
+	] = events
 
-	return commits + mergeRequestsOpened + approvals + issuesOpened
+	return (
+		pushes +
+		mergeRequestsOpened +
+		mergeRequestsMerged +
+		approvals +
+		issuesOpened +
+		issuesClosed +
+		comments +
+		other
+	)
 }
 
 /** Adds each GitLab day to the GitHub count on the same date and raises that year's total by the same amount. */

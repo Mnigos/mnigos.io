@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { getGitLabContributionCount } from '../domain/gitlab-contributions.helper'
 import snapshot from './gitlab-events.snapshot.json'
 import snapshotText from './gitlab-events.snapshot.json?raw'
 
@@ -66,19 +67,31 @@ describe('GitLab events snapshot', () => {
 	})
 
 	it.each([
-		{ year: 2021, expected: 719 },
-		{ year: 2022, expected: 6675 },
-		{ year: 2023, expected: 2649 },
-		{ year: 2024, expected: 23 },
+		{ year: 2021, expected: 155 },
+		{ year: 2022, expected: 2887 },
+		{ year: 2023, expected: 1577 },
+		{ year: 2024, expected: 16 },
 	])('adds up to $expected contributions in $year', ({ year, expected }) => {
 		expect(
 			entries
 				.filter(([date]) => date.startsWith(`${year}-`))
 				.reduce(
-					(sum, [, counts]) =>
-						sum + counts[1] + counts[2] + counts[4] + counts[5],
+					(sum, [, counts]) => sum + getGitLabContributionCount(counts),
 					0
 				)
 		).toBe(expected)
+	})
+
+	it('adds up to 4635 events across all years', () => {
+		expect(
+			entries.reduce(
+				(sum, [, counts]) => sum + getGitLabContributionCount(counts),
+				0
+			)
+		).toBe(4635)
+	})
+
+	it('counts 47 events on 2022-02-01', () => {
+		expect(getGitLabContributionCount(snapshot.days['2022-02-01'])).toBe(47)
 	})
 })

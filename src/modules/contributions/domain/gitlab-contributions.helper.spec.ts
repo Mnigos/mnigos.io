@@ -7,16 +7,16 @@ import {
 
 describe('getGitLabContributionCount', () => {
 	it.each([
-		{ column: 'pushes', index: 0, expected: 0 },
-		{ column: 'commits', index: 1, expected: 7 },
+		{ column: 'pushes', index: 0, expected: 7 },
+		{ column: 'commits', index: 1, expected: 0 },
 		{ column: 'merge requests opened', index: 2, expected: 7 },
-		{ column: 'merge requests merged', index: 3, expected: 0 },
+		{ column: 'merge requests merged', index: 3, expected: 7 },
 		{ column: 'approvals', index: 4, expected: 7 },
 		{ column: 'issues opened', index: 5, expected: 7 },
-		{ column: 'issues closed', index: 6, expected: 0 },
-		{ column: 'comments', index: 7, expected: 0 },
+		{ column: 'issues closed', index: 6, expected: 7 },
+		{ column: 'comments', index: 7, expected: 7 },
 		{ column: 'branch deletions', index: 8, expected: 0 },
-		{ column: 'other', index: 9, expected: 0 },
+		{ column: 'other', index: 9, expected: 7 },
 	])('counts $column as $expected', ({ index, expected }) => {
 		const events = Array.from({ length: 10 }, () => 0)
 		events[index] = 7
@@ -24,10 +24,10 @@ describe('getGitLabContributionCount', () => {
 		expect(getGitLabContributionCount(events)).toBe(expected)
 	})
 
-	it('adds the four included columns on a day with every event type', () => {
-		expect(getGitLabContributionCount([26, 243, 5, 6, 1, 0, 4, 5, 6, 2])).toBe(
-			249
-		)
+	it('adds the eight included columns on a day with every event type', () => {
+		expect(
+			getGitLabContributionCount([2, 101, 3, 5, 7, 11, 13, 17, 103, 19])
+		).toBe(77)
 	})
 
 	it('returns zero for a day without events', () => {
@@ -47,17 +47,17 @@ describe('addGitLabContributions', () => {
 		]
 		const days: GitLabEventDays = {
 			'2023-12-31': [1, 7, 2, 4, 3, 5, 6, 7, 8, 9],
-			'2024-01-01': [0, 11, 0, 0, 0, 0, 0, 0, 0, 0],
-			'2024-02-28': [0, 13, 0, 0, 0, 0, 0, 0, 0, 0],
-			'2024-02-29': [0, 19, 0, 0, 0, 0, 0, 0, 0, 0],
-			'2024-03-01': [0, 23, 0, 0, 0, 0, 0, 0, 0, 0],
-			'2024-12-31': [0, 29, 0, 0, 0, 0, 0, 0, 0, 0],
-			'2025-01-01': [0, 31, 0, 0, 0, 0, 0, 0, 0, 0],
+			'2024-01-01': [11, 110, 0, 0, 0, 0, 0, 0, 1100, 0],
+			'2024-02-28': [13, 130, 0, 0, 0, 0, 0, 0, 1300, 0],
+			'2024-02-29': [19, 190, 0, 0, 0, 0, 0, 0, 1900, 0],
+			'2024-03-01': [23, 230, 0, 0, 0, 0, 0, 0, 2300, 0],
+			'2024-12-31': [29, 290, 0, 0, 0, 0, 0, 0, 2900, 0],
+			'2025-01-01': [31, 310, 0, 0, 0, 0, 0, 0, 3100, 0],
 		}
 		const originalYears = structuredClone(years)
 		const originalDays = structuredClone(days)
 		const counts2023 = Array.from({ length: 365 }, () => 2)
-		counts2023[364] = 19
+		counts2023[364] = 39
 		const counts2024 = Array.from({ length: 366 }, () => 3)
 		counts2024[0] = 14
 		counts2024[58] = 16
@@ -72,7 +72,7 @@ describe('addGitLabContributions', () => {
 		expect(combined).toEqual([
 			{ year: 2025, total: 1856, counts: counts2025 },
 			{ year: 2024, total: 1193, counts: counts2024 },
-			{ year: 2023, total: 747, counts: counts2023 },
+			{ year: 2023, total: 767, counts: counts2023 },
 			years[3],
 		])
 		expect(years).toEqual(originalYears)
@@ -87,9 +87,20 @@ describe('addGitLabContributions', () => {
 	it('preserves the GitHub total when it differs from the sum of daily counts', () => {
 		expect(
 			addGitLabContributions([{ year: 2024, total: 100, counts: [4] }], {
-				'2024-01-01': [0, 7, 0, 0, 0, 0, 0, 0, 0, 0],
+				'2024-01-01': [7, 70, 0, 0, 0, 0, 0, 0, 700, 0],
 			})
 		).toEqual([{ year: 2024, total: 107, counts: [11] }])
+	})
+
+	it('ignores days containing only commits and branch deletions', () => {
+		const years = [{ year: 2024, total: 100, counts: [4, 6] }]
+
+		expect(
+			addGitLabContributions(years, {
+				'2024-01-01': [0, 243, 0, 0, 0, 0, 0, 0, 6, 0],
+				'2024-01-02': [0, 7, 0, 0, 0, 0, 0, 0, 8, 0],
+			})
+		).toEqual(years)
 	})
 
 	it('leaves every count and total unchanged when there are no GitLab days', () => {
