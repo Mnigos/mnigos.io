@@ -1,5 +1,6 @@
-import { writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { describeTokenExpiration } from '../src/modules/contributions/domain/token-expiration.helper'
+import { writeContributionSnapshot } from '../src/modules/contributions/infrastructure/contributions-snapshot.repository'
 import { fetchContributionYears } from '../src/modules/contributions/infrastructure/contributions.client'
 import { env } from '../src/modules/contributions/infrastructure/contributions.config'
 
@@ -14,12 +15,17 @@ if (!token)
 		'GH_CONTRIBUTIONS_TOKEN must be set: GH_CONTRIBUTIONS_TOKEN=$(gh auth token) bun <this script>'
 	)
 
-const years = await fetchContributionYears(token)
-const yearLines = years.map(year => `    ${JSON.stringify(year)}`)
-
-await writeFile(
+const { years, tokenExpiration } = await fetchContributionYears(token)
+const written = await writeContributionSnapshot(
 	SNAPSHOT_PATH,
-	`{\n  "generatedAt": "${new Date().toISOString()}",\n  "years": [\n${yearLines.join(',\n')}\n  ]\n}\n`
+	years,
+	new Date()
 )
+const expiration = describeTokenExpiration(tokenExpiration, new Date())
 
 for (const { year, total } of years) console.info(`${year}: ${total}`)
+console.info(written ? 'Snapshot updated' : 'Snapshot unchanged')
+// GitHub Actions turns this line into an annotation on the run summary.
+console.info(
+	expiration.warn ? `::warning::${expiration.message}` : expiration.message
+)

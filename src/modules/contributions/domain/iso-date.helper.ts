@@ -1,4 +1,4 @@
-const DAY_MS = 86_400_000
+export const DAY_MS = 86_400_000
 
 export function addDays(date: string, days: number) {
 	return new Date(Date.parse(date) + days * DAY_MS).toISOString().slice(0, 10)
