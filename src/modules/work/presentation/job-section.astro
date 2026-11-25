@@ -14,9 +14,10 @@ interface Props {
   job: Job
   years: ContributionYear[]
   today: string
+  legend?: string
 }
 
-const { job, years, today } = Astro.props
+const { job, years, today, legend } = Astro.props
 const { start, end } = job.period
 const weeks = getWeeklyTotals(years, getJobPeriodRange(job.period, today))
 const rows = getJobGroupRows(job.groups)
@@ -39,6 +40,7 @@ const rows = getJobGroupRows(job.groups)
       ))
     }
   </div>
+  {legend && <p class="mt-2 text-[12.5px] text-faint">{legend}</p>}
   <p class="mt-4 max-w-[36em] text-[17px] text-body">{job.description}</p>
   {
     rows.length > 0 && (

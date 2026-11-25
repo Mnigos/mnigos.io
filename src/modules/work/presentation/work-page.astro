@@ -1,19 +1,23 @@
 ---
 import { loadContributionYears } from '../../contributions/infrastructure/contributions.client'
 import { PROFILE } from '../../profile/content/profile.content'
+import ProductFacts from '../../profile/presentation/product-facts.astro'
 import Layout from '../../site/presentation/layout.astro'
 import DefinitionList from './definition-list.astro'
 import JobSection from './job-section.astro'
 import WorkSection from './work-section.astro'
 
-const { name, product, jobs, stack } = PROFILE
+const { name, product, jobs, stack, work } = PROFILE
 const years = await loadContributionYears()
 const today = new Date().toISOString().slice(0, 10)
 const description = `${name}: ${[product.name, ...jobs.map(({ company }) => company)].join(', ')}`
 ---
 
 <Layout title="Work · mnigos" description={description}>
-  <h1 class="heading my-1.5 text-[36px] leading-none xs:text-[44px]">Work</h1>
+  <div class="py-1.5">
+    <h1 class="heading text-[36px] leading-none xs:text-[44px]">Work</h1>
+    <p class="mt-3.5 max-w-[34em] text-[17px] text-dim">{work.intro}</p>
+  </div>
 
   <WorkSection
     heading={product.name}
@@ -22,7 +26,9 @@ const description = `${name}: ${[product.name, ...jobs.map(({ company }) => comp
     subheading={product.tagline}
   >
     <p class="mt-4 max-w-[36em] text-[17px] text-body">{product.summary}</p>
-    {/* MNG-2 facts strip from product.facts */}
+    <div class="mt-5">
+      <ProductFacts product={product} factsOnly />
+    </div>
     <DefinitionList>
       <dt>What I do</dt>
       <dd>{product.whatIDo}</dd>
@@ -31,7 +37,16 @@ const description = `${name}: ${[product.name, ...jobs.map(({ company }) => comp
     </DefinitionList>
   </WorkSection>
 
-  {jobs.map(job => <JobSection job={job} years={years} today={today} />)}
+  {
+    jobs.map((job, index) => (
+      <JobSection
+        job={job}
+        years={years}
+        today={today}
+        legend={index === 0 ? work.weeklyStripLegend : undefined}
+      />
+    ))
+  }
 
   <WorkSection heading="Stack" aside="with where I used it">
     <DefinitionList>
