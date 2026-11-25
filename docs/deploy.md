@@ -26,7 +26,28 @@ Set these once under Workers & Pages, the `mnigos-io` Worker, Settings, Build:
 
 The Worker name in the dashboard must match `name` in `wrangler.jsonc`, or the build fails.
 
-`GH_CONTRIBUTIONS_TOKEN` is the only build secret, and it is optional. With it, the build fetches the contribution calendar from GitHub and fails if that fetch fails. Without it, the build reads the snapshot committed in `src/modules/contributions/`, so a build with no secrets at all still passes. Add it under Settings, Build, Build variables and secrets, never as a Worker variable and never in the repository.
+The build has no secrets. Cloudflare never gets `GH_CONTRIBUTIONS_TOKEN`, so every build reads the contribution snapshot committed in `src/modules/contributions/infrastructure/`, which the daily refresh below keeps current.
+
+## Daily contribution refresh
+
+`.github/workflows/refresh-contributions.yml` runs every day at 04:17 UTC, and on demand with `gh workflow run refresh-contributions.yml --repo Mnigos/mnigos.io`. It runs `bun run contributions:refresh` with the repository secret `GH_CONTRIBUTIONS_TOKEN`. The script leaves the snapshot untouched when the GitHub numbers are the same, so a quiet day ends without a commit. When they changed, the job runs `bun run check` and `bun run test`, commits the snapshot as `github-actions[bot]`, rebases it onto the latest `main` and pushes, with one retry when the push is rejected. It never force-pushes, and a conflict on the snapshot fails the run with `main` left as it was.
+
+- CI does not run on the bot commit, because GitHub starts no workflow for a push made with a workflow's `GITHUB_TOKEN`. The check and test steps in the refresh job cover it instead. The job does not build: a build that fails on Cloudflare keeps the previous version live.
+- Workers Builds still deploys the bot commit. Cloudflare's GitHub App starts a build for every push to `main`, whoever pushed it.
+- GitHub disables a scheduled workflow in a public repository after 60 days without repository activity. The bot commits only on days the numbers change, and GitHub does not document whether bot commits count, so a long quiet stretch can switch the refresh off. Turn it back on under Actions, Refresh contributions, Enable workflow, or with `gh workflow enable refresh-contributions.yml --repo Mnigos/mnigos.io`.
+- GitHub emails a failed scheduled run only to whoever last changed the `cron` line in the workflow.
+
+### The token
+
+`GH_CONTRIBUTIONS_TOKEN` is a classic personal access token with only the `read:user` scope, stored as an Actions repository secret. The current one expires on 2026-12-25. Each run logs the expiry date that GitHub sends in the `github-authentication-token-expiration` response header, and adds a warning to the run summary when fewer than 14 days are left. A warning sends no email; the run fails only once the token stops working.
+
+To rotate it:
+
+1. Create a classic token at https://github.com/settings/tokens/new with only the `read:user` scope and an expiry date.
+2. Run `gh secret set GH_CONTRIBUTIONS_TOKEN --repo Mnigos/mnigos.io` and paste the token.
+3. Run the workflow with `gh workflow run refresh-contributions.yml --repo Mnigos/mnigos.io` and check that it passes.
+
+When GitHub rejects the token with HTTP 401, the run fails with a message that names the secret and these steps.
 
 ## Previews
 

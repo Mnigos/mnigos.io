@@ -21,7 +21,7 @@ Personal portfolio and blog. Built with [Astro](https://astro.build), Tailwind C
 
 ## Contributions
 
-The build reads the GitHub contribution calendar from `src/modules/contributions/`. With `GH_CONTRIBUTIONS_TOKEN` set it fetches the calendar from the GitHub GraphQL API and fails if the fetch fails. Without it, it reads the committed snapshot. Refresh the snapshot with `GH_CONTRIBUTIONS_TOKEN=$(gh auth token) bun run contributions:refresh`.
+The build reads the GitHub contribution calendar from `src/modules/contributions/`. With `GH_CONTRIBUTIONS_TOKEN` set it fetches the calendar from the GitHub GraphQL API and fails if the fetch fails. Without it, it reads the committed snapshot. Refresh the snapshot with `GH_CONTRIBUTIONS_TOKEN=$(gh auth token) bun run contributions:refresh`. A GitHub Actions workflow refreshes it every day and commits it to `main` when the numbers change: [docs/deploy.md](docs/deploy.md).
 
 ## Deploy
 
