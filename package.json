@@ -10,6 +10,7 @@
     "check": "ultracite check && bun scripts/check-files.ts",
     "check:fix": "ultracite fix --unsafe",
     "test": "vitest run",
+    "contributions:refresh": "bun scripts/refresh-contributions.ts",
     "prepare": "husky",
     "astro": "astro"
   },
@@ -17,6 +18,8 @@
     "@astrojs/mdx": "^7.0.2",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
+    "@octokit/graphql": "9.0.5",
+    "@t3-oss/env-core": "0.13.11",
     "@tailwindcss/vite": "^4.3.2",
     "astro": "^7.0.7",
     "tailwindcss": "^4.3.2",
