@@ -18,7 +18,7 @@ Igor Makowski's personal site and blog: a static Astro 7 site with MDX posts, Ta
 | `bun run typecheck` | `astro check`                                               |
 | `bun run check`     | Ultracite (oxlint and oxfmt), then `scripts/check-files.ts` |
 | `bun run check:fix` | Ultracite fixes, unsafe ones included                       |
-| `bun run test`      | Vitest, every `src/**/*.spec.ts`                            |
+| `bun run test`      | Vitest, every `*.spec.ts` in `src/`, `tooling/`, `scripts/` |
 
 ## Boundaries
 
@@ -27,6 +27,7 @@ Igor Makowski's personal site and blog: a static Astro 7 site with MDX posts, Ta
   - `infrastructure/`: reads the outside world at build time: `astro:content`, `fetch`, files.
   - `presentation/`: `.astro` components and pages, endpoint handlers.
   - `content/`: typed content data.
+- Every lintable file under `src/` sits in a module layer, except the files Astro places itself: `src/content.config.ts` with its spec, the route files in `src/pages/` and any `*.d.ts`. (lint-enforced)
 - A module has only the layers it needs: no empty folders, no files at the module root. A module may import another module's files directly; there is no index file.
 - `src/pages/` holds only thin route files: each imports a module component or handler and renders or re-exports it, plus what Astro needs in the route file itself. `src/content.config.ts`, the posts in `src/content/blog/` and `src/styles/global.css` stay where they are.
 

@@ -43,7 +43,6 @@ const MODULE_PATH_PATTERN = /(?:^|\/)src\/modules\/([^/]+)\/(?:([^/]+)\/)?/u
 export interface FilePath {
 	path: string
 	basename: string
-	directory: string
 }
 
 export interface ModulePath {
@@ -57,7 +56,6 @@ export function toFilePath(filename: string): FilePath {
 	return {
 		path,
 		basename: posix.basename(path),
-		directory: posix.dirname(path),
 	}
 }
 

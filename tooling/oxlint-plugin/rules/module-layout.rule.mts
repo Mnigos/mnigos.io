@@ -1,5 +1,7 @@
+import { relative } from 'node:path'
 import { defineRule } from '@oxlint/plugins'
 import {
+	type FilePath,
 	getModulePath,
 	isModuleLayer,
 	MODULE_LAYERS,
@@ -8,27 +10,46 @@ import {
 
 const MODULE_NAME_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u
 const LAYER_LIST = MODULE_LAYERS.map(layer => `${layer}/`).join(', ')
+const ASTRO_PLACED_FILES = new Set([
+	'src/content.config.ts',
+	'src/content.config.spec.ts',
+])
 
-/** Keeps `src/modules/<module>/` kebab-case and every file inside one of its layer folders. */
+/** Astro looks for these files at fixed paths, so they stay outside the modules. */
+function isAstroPlaced({ path, basename }: FilePath) {
+	return (
+		ASTRO_PLACED_FILES.has(path) ||
+		path.startsWith('src/pages/') ||
+		basename.endsWith('.d.ts')
+	)
+}
+
+/** Keeps every file under `src/` inside a layer folder of a kebab-case `src/modules/<module>/`. */
 export const moduleLayoutRule = defineRule({
 	meta: {
 		type: 'suggestion',
 		docs: {
 			description:
-				'Module folders are kebab-case and hold files only inside layer folders.',
+				'Files under src/ sit in a layer folder of a kebab-case module.',
 		},
 		messages: {
 			moduleName:
 				'Name the module folder {{module}} in kebab-case (AGENTS.md boundaries).',
 			outsideLayer: `Move this file into one of the layer folders of modules/{{module}}: ${LAYER_LIST} (AGENTS.md boundaries).`,
+			outsideModule: `Move this file into src/modules/<module>/ under one of its layer folders: ${LAYER_LIST} (AGENTS.md boundaries).`,
 		},
 	},
 	create(context) {
-		const modulePath = getModulePath(toFilePath(context.filename))
+		const file = toFilePath(relative(context.cwd, context.filename))
+		const modulePath = getModulePath(file)
 
 		return {
 			Program(node) {
-				if (!modulePath) return
+				if (!modulePath) {
+					if (file.path.startsWith('src/') && !isAstroPlaced(file))
+						context.report({ node, messageId: 'outsideModule' })
+					return
+				}
 
 				const { module, folder } = modulePath
 
