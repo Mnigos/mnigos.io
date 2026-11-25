@@ -1,17 +1,23 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { loadContributionYears } from '../../contributions/infrastructure/contributions.client'
+import {
+	fetchContributionYears,
+	loadContributionYears,
+	loadSnapshotContributionYears,
+} from '../../contributions/infrastructure/contributions.client'
 import { loadRecentWeekLevels } from './recent-contributions.query'
 
 vi.mock('../../contributions/infrastructure/contributions.client', () => ({
+	fetchContributionYears: vi.fn(),
 	loadContributionYears: vi.fn(),
+	loadSnapshotContributionYears: vi.fn(),
 }))
 
 type DailyCount = readonly [date: string, count: number]
 
-function makeYears(days: readonly DailyCount[]) {
+function makeSnapshot(days: readonly DailyCount[]) {
 	const countsByDate = new Map(days)
 
-	return [2026, 2025, 2024, 2023].map(year => {
+	const years = [2026, 2025, 2024, 2023].map(year => {
 		const counts = Array.from(
 			{ length: year === 2024 ? 366 : 365 },
 			(_, index) =>
@@ -26,23 +32,55 @@ function makeYears(days: readonly DailyCount[]) {
 			counts,
 		}
 	})
+
+	return { generatedAt: '2026-11-25T00:00:00Z', years }
 }
 
-afterEach(() => vi.resetAllMocks())
+afterEach(() => {
+	vi.resetAllMocks()
+	vi.unstubAllEnvs()
+	vi.unstubAllGlobals()
+})
 
 describe('loadRecentWeekLevels', () => {
 	it('returns 26 empty levels when there is no contribution data', async () => {
-		vi.mocked(loadContributionYears).mockResolvedValue([])
+		vi.mocked(loadSnapshotContributionYears).mockResolvedValue(makeSnapshot([]))
 
 		expect(await loadRecentWeekLevels('2026-11-25')).toStrictEqual(
 			Array.from({ length: 26 }, () => 0)
 		)
-		expect(loadContributionYears).toHaveBeenCalledExactlyOnceWith()
+		expect(loadSnapshotContributionYears).toHaveBeenCalledExactlyOnceWith()
+	})
+
+	it('reads only the snapshot when a GitHub token is set', async () => {
+		vi.stubEnv('GH_CONTRIBUTIONS_TOKEN', 'test-token-123')
+		const fetchMock = vi
+			.fn<typeof fetch>()
+			.mockRejectedValue(new Error('Unexpected network request'))
+		vi.stubGlobal('fetch', fetchMock)
+		vi.mocked(loadContributionYears).mockRejectedValue(
+			new Error('Unexpected live contribution load')
+		)
+		vi.mocked(fetchContributionYears).mockRejectedValue(
+			new Error('Unexpected GitHub request')
+		)
+		vi.mocked(loadSnapshotContributionYears).mockResolvedValue(
+			makeSnapshot([['2026-11-25', 601]])
+		)
+
+		expect(await loadRecentWeekLevels('2026-11-25')).toStrictEqual([
+			...Array.from({ length: 25 }, () => 0),
+			8,
+		])
+		expect(loadSnapshotContributionYears).toHaveBeenCalledExactlyOnceWith()
+		expect(loadContributionYears).not.toHaveBeenCalled()
+		expect(fetchContributionYears).not.toHaveBeenCalled()
+		expect(fetchMock).not.toHaveBeenCalled()
 	})
 
 	it('orders weeks oldest first and includes exactly 182 days through today', async () => {
-		vi.mocked(loadContributionYears).mockResolvedValue(
-			makeYears([
+		vi.mocked(loadSnapshotContributionYears).mockResolvedValue(
+			makeSnapshot([
 				['2026-05-27', 1000],
 				['2026-05-28', 8],
 				['2026-06-03', 8],
@@ -68,8 +106,8 @@ describe('loadRecentWeekLevels', () => {
 	])(
 		'keeps 26 weeks across a year boundary ending on $today',
 		async ({ today, first, lastStart }) => {
-			vi.mocked(loadContributionYears).mockResolvedValue(
-				makeYears([
+			vi.mocked(loadSnapshotContributionYears).mockResolvedValue(
+				makeSnapshot([
 					[first, 1],
 					[lastStart, 15],
 					[today, 1],
@@ -93,15 +131,23 @@ describe('loadRecentWeekLevels', () => {
 		[46, 3],
 		[100, 3],
 		[101, 4],
-		[220, 4],
+		[170, 4],
+		[171, 5],
+		[220, 5],
 		[221, 5],
-		[1_000_000, 5],
+		[250, 5],
+		[251, 6],
+		[400, 6],
+		[401, 7],
+		[600, 7],
+		[601, 8],
+		[1_000_000, 8],
 	])(
 		'maps weekly total %i to level %i with the weekly thresholds',
 		async (total, expected) => {
 			const firstDay = Math.floor(total / 2)
-			vi.mocked(loadContributionYears).mockResolvedValue(
-				makeYears([
+			vi.mocked(loadSnapshotContributionYears).mockResolvedValue(
+				makeSnapshot([
 					['2026-11-24', firstDay],
 					['2026-11-25', total - firstDay],
 				])

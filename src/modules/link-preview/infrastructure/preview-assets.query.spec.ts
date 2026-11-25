@@ -56,7 +56,7 @@ describe('loadPreviewAssets', () => {
 		expect(colors[name]).toBe(expected)
 	})
 
-	it('indexes contribution colors from cell through level 5 in global.css order', async () => {
+	it('indexes contribution colors from cell through level 8 in global.css order', async () => {
 		const { colors } = await loadPreviewAssets()
 		const css = await readFile(
 			new URL('../../../styles/global.css', import.meta.url),
@@ -75,6 +75,9 @@ describe('loadPreviewAssets', () => {
 			'level-3',
 			'level-4',
 			'level-5',
+			'level-6',
+			'level-7',
+			'level-8',
 		].map(name => declarations.get(`--color-${name}`))
 
 		for (const color of expected) expect(color).toMatch(/^#[\da-f]{6}$/iu)
