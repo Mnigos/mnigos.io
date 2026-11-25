@@ -349,6 +349,7 @@ export const PROFILE = profileSchema.parse({
 	],
 	work: {
 		intro: 'My own product first, then the jobs, newest first.',
-		weeklyStripLegend: 'One square is one week of my GitHub contributions.',
+		weeklyStripLegend:
+			'One square is one week of my GitHub and GitLab contributions.',
 	},
 } satisfies z.input<typeof profileSchema>)
