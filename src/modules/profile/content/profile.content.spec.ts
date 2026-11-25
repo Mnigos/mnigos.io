@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest'
+import { assert, describe, expect, test } from 'vitest'
 import { PROFILE } from './profile.content'
 
 function* stringsIn(value: unknown): Generator<string> {
@@ -11,23 +11,49 @@ function* stringsIn(value: unknown): Generator<string> {
 	}
 }
 
+function hasPrivateDetails(value: string): boolean {
+	return (
+		/\b[\w.+-]+@[\w.-]+\.[a-z]{2,}\b/iu.test(value) ||
+		/(?<!\w)\+?\d(?:[\s().-]*\d){8,14}(?!\w)/u.test(value) ||
+		/\b(?:phone|tel|mobile number)\b/iu.test(value) ||
+		/\b(?:university|degree|diploma|bachelor|master's|BSc|MSc|PhD|studies|school)\b/iu.test(
+			value
+		) ||
+		/\b(?:revenue|MRR|ARR|income|subscribers)\b/iu.test(value)
+	)
+}
+
 describe('PROFILE', () => {
 	test('keeps the approved work intro and weekly strip legend', () => {
 		expect(PROFILE.work).toStrictEqual({
-			intro: 'My own product first, then the jobs, newest first.',
+			intro: 'My own product first, then my jobs, newest first.',
 			weeklyStripLegend:
 				'One square is one week of my GitHub and GitLab contributions.',
 		})
 	})
 
-	test('limits the Ludus AI job to the approved public fields', () => {
-		expect(PROFILE.jobs.find(job => job.company === 'Ludus AI')).toStrictEqual({
+	test('keeps the approved Ludus AI role, period, description and group counts', () => {
+		const job = PROFILE.jobs.find(candidate => candidate.company === 'Ludus AI')
+
+		assert(job !== undefined)
+		expect({
+			...job,
+			groups: job.groups.map(({ title, items }) => ({
+				title,
+				itemCount: items.length,
+			})),
+		}).toStrictEqual({
 			company: 'Ludus AI',
 			role: 'Fullstack Developer',
 			period: { start: '2025-06' },
 			description:
-				'Ludus AI is an AI assistant for Unreal Engine, used by 30,000+ developers.',
-			groups: [],
+				'Ludus AI is an AI assistant for Unreal Engine, used by 30,000+ developers. I own its web platform and a large part of its infrastructure and security.',
+			groups: [
+				{ title: 'Product', itemCount: 8 },
+				{ title: 'Security and compliance', itemCount: 4 },
+				{ title: 'Infrastructure', itemCount: 4 },
+				{ title: 'Code quality', itemCount: 2 },
+			],
 		})
 	})
 
@@ -41,21 +67,73 @@ describe('PROFILE', () => {
 		])
 	})
 
-	test('mentions Ludus only as a bare place in the stack', () => {
-		const places = PROFILE.stack
-			.flatMap(group => group.entries.flatMap(entry => entry.usedAt))
-			.filter(place => place.includes('Ludus'))
+	test('places the mobile app stack after Tailwind CSS in Front end', () => {
+		const frontEnd = PROFILE.stack.find(group => group.title === 'Front end')
 
-		expect(places.length).toBeGreaterThan(0)
-		for (const place of places) expect(place).toBe('Ludus AI')
-	})
-
-	test('excludes forbidden punctuation and mobile technologies from every string', () => {
-		const forbidden = [...stringsIn(PROFILE)].filter(value =>
-			/[\u2013\u2014]|React Native|Expo/u.test(value)
+		assert(frontEnd !== undefined)
+		const tailwindIndex = frontEnd.entries.findIndex(
+			entry => entry.technology === 'Tailwind CSS'
 		)
 
-		expect(forbidden).toEqual([])
+		expect(tailwindIndex).toBeGreaterThanOrEqual(0)
+		expect(frontEnd.entries[tailwindIndex + 1]).toStrictEqual({
+			technology: 'React Native, Expo',
+			usedAt: ['rigtch.fm mobile app'],
+		})
+	})
+
+	test('excludes forbidden punctuation from every string', () => {
+		const forbidden = [...stringsIn(PROFILE)].filter(value =>
+			/[\u2013\u2014]/u.test(value)
+		)
+
+		expect(forbidden).toStrictEqual([])
+	})
+
+	test('excludes private contact, education, revenue and subscriber details from every string', () => {
+		expect([...stringsIn(PROFILE)].filter(hasPrivateDetails)).toStrictEqual([])
+	})
+
+	test.each([
+		'Contact person@example.com',
+		'Phone: +48 123 456 789',
+		'Phone: (212) 555-0123',
+		'Phone: 123456789',
+		'University education',
+		'A degree in computing',
+		'Completed studies',
+		'Attended school',
+		'Annual revenue',
+		'MRR: 100',
+		'ARR: 1200',
+		'Monthly income',
+		'100 subscribers',
+		'Phone: 555-0123',
+		'Education: BSc Computer Science',
+	])('detects private details in %s', value => {
+		expect(hasPrivateDetails(value)).toBe(true)
+	})
+
+	test.each([
+		'sign-up with email confirmation',
+		'Next.js and tRPC until 02.2026',
+		'73,000 listeners and 362M plays stored',
+		'paid plan since 2026-03',
+		'checked on 2026-11-25',
+		'rigtch.fm mobile app',
+	])('allows approved public wording in %s', value => {
+		expect(hasPrivateDetails(value)).toBe(false)
+	})
+
+	test('keeps the approved Casual Fitters project description', () => {
+		const project = PROFILE.jobs
+			.find(job => job.company === 'Blazity')
+			?.groups.flatMap(group => group.items)
+			.find(item => item.title === 'Casual Fitters')
+
+		expect(project?.text).toBe(
+			'A London tailoring brand. Online store with a suit customiser and appointment booking. Joined near the end of a late project to help finish it, completing the remaining work, fixing earlier bugs and releasing the store.'
+		)
 	})
 
 	test('gives every product and open source fact a source and checked date', () => {

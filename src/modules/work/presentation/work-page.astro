@@ -10,7 +10,7 @@ import WorkSection from './work-section.astro'
 const { name, product, jobs, stack, work } = PROFILE
 const years = await loadContributionYears()
 const today = new Date().toISOString().slice(0, 10)
-const description = `${name}: ${[product.name, ...jobs.map(({ company }) => company)].join(', ')}`
+const description = `Work by ${name}: ${[product.name, ...jobs.map(({ company }) => company)].join(', ')}.`
 ---
 
 <Layout title="Work · mnigos" description={description}>
@@ -48,7 +48,7 @@ const description = `${name}: ${[product.name, ...jobs.map(({ company }) => comp
     ))
   }
 
-  <WorkSection heading="Stack" aside="with where I used it">
+  <WorkSection heading="Stack" aside="and where I used it">
     <DefinitionList>
       {
         stack.map(({ title, entries }) => (

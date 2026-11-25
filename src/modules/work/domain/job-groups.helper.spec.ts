@@ -65,10 +65,49 @@ describe('getJobGroupRows', () => {
 		expect(getJobGroupRows([])).toStrictEqual([])
 	})
 
-	it('returns no rows for the real Ludus AI job', () => {
+	it('returns the four approved rows and item lists for the real Ludus AI job', () => {
 		const job = PROFILE.jobs.find(candidate => candidate.company === 'Ludus AI')
 
 		assert(job !== undefined)
-		expect(getJobGroupRows(job.groups)).toStrictEqual([])
+		expect(getJobGroupRows(job.groups)).toStrictEqual([
+			{
+				term: 'Product',
+				items: [
+					'Account web app, landing page and the web UI of the Unreal Engine plugin',
+					'Took over a full rewrite of the web app and shipped it to production',
+					'Took over billing on Stripe, made it reliable and extended it with trials, credit packs, saved cards, auto top-up and 3-D Secure',
+					'Custom OAuth authorization that connects user accounts with the Unreal Engine plugin and AI integrations',
+					'LudusMCP, an integration layer that connects Ludus AI with external AI agents',
+					'Trial abuse detection with automatic containment and alerts',
+					'Admin views for support workflows',
+					'Product analytics on PostHog, Google Tag Manager events and server-side conversion tracking for ad platforms',
+				],
+			},
+			{
+				term: 'Security and compliance',
+				items: [
+					'Led the security work for ISO 27001 and SOC 2 Type 2',
+					'Vulnerability management for code, dependencies, Docker images and cloud configuration',
+					'Strict Content Security Policy and unified security headers',
+					'GDPR: account erasure across web and API, consent handling, data retention',
+				],
+			},
+			{
+				term: 'Infrastructure',
+				items: [
+					'Cloudflare: Workers, WAF, Zero Trust, DNS and email security',
+					'Google Cloud: load balancer configuration, Cloud Armor rules, alerting on permission and audit-log changes',
+					'Release management, CI pipelines and automatic database migrations',
+					'Observability: telemetry pipeline, Sentry triage and production alerts',
+				],
+			},
+			{
+				term: 'Code quality',
+				items: [
+					'Introduced lint rules and coding standards that raised code quality across the web repository',
+					'Moved parts of the app from Prisma to Drizzle',
+				],
+			},
+		])
 	})
 })

@@ -62,7 +62,7 @@ export const PROFILE = profileSchema.parse({
 		kind: 'own product',
 		tagline: 'Built and run solo',
 		summary:
-			'Spotify listening stats that are available all year, not only during Wrapped. Listeners connect their Spotify account, import their full listening history and get their top artists and tracks, which they can share.',
+			'Spotify listening stats available all year, not just during Wrapped. Listeners connect their Spotify account, import their full listening history and get shareable top artists and tracks.',
 		whatIDo:
 			'I build and run it alone: API, web app, billing, SEO and support. Most of the traffic comes from Google search.',
 		stack:
@@ -89,8 +89,47 @@ export const PROFILE = profileSchema.parse({
 			role: 'Fullstack Developer',
 			period: { start: '2025-06' },
 			description:
-				'Ludus AI is an AI assistant for Unreal Engine, used by 30,000+ developers.',
-			groups: [],
+				'Ludus AI is an AI assistant for Unreal Engine, used by 30,000+ developers. I own its web platform and a large part of its infrastructure and security.',
+			groups: [
+				{
+					title: 'Product',
+					items: [
+						'Account web app, landing page and the web UI of the Unreal Engine plugin',
+						'Took over a full rewrite of the web app and shipped it to production',
+						'Took over billing on Stripe, made it reliable and extended it with trials, credit packs, saved cards, auto top-up and 3-D Secure',
+						'Custom OAuth authorization that connects user accounts with the Unreal Engine plugin and AI integrations',
+						'LudusMCP, an integration layer that connects Ludus AI with external AI agents',
+						'Trial abuse detection with automatic containment and alerts',
+						'Admin views for support workflows',
+						'Product analytics on PostHog, Google Tag Manager events and server-side conversion tracking for ad platforms',
+					].map(text => ({ text })),
+				},
+				{
+					title: 'Security and compliance',
+					items: [
+						'Led the security work for ISO 27001 and SOC 2 Type 2',
+						'Vulnerability management for code, dependencies, Docker images and cloud configuration',
+						'Strict Content Security Policy and unified security headers',
+						'GDPR: account erasure across web and API, consent handling, data retention',
+					].map(text => ({ text })),
+				},
+				{
+					title: 'Infrastructure',
+					items: [
+						'Cloudflare: Workers, WAF, Zero Trust, DNS and email security',
+						'Google Cloud: load balancer configuration, Cloud Armor rules, alerting on permission and audit-log changes',
+						'Release management, CI pipelines and automatic database migrations',
+						'Observability: telemetry pipeline, Sentry triage and production alerts',
+					].map(text => ({ text })),
+				},
+				{
+					title: 'Code quality',
+					items: [
+						'Introduced lint rules and coding standards that raised code quality across the web repository',
+						'Moved parts of the app from Prisma to Drizzle',
+					].map(text => ({ text })),
+				},
+			],
 		},
 		{
 			company: 'Blazity',
@@ -102,7 +141,7 @@ export const PROFILE = profileSchema.parse({
 					items: [
 						{
 							title: 'Visegrad24',
-							text: 'A news portal. Main author of the codebase from the first week to production releases. Component library, article and author pages, sign-up with email confirmation, comments, Algolia search and the Political Compass quiz.',
+							text: 'A news portal. Main author of the codebase from week one to production releases. Component library, article and author pages, sign-up with email confirmation, comments, Algolia search and the Political Compass quiz.',
 						},
 						{
 							title: 'Reducto',
@@ -110,7 +149,7 @@ export const PROFILE = profileSchema.parse({
 						},
 						{
 							title: 'Casual Fitters',
-							text: 'A London tailoring brand. Online store with a suit customiser and appointment booking.',
+							text: 'A London tailoring brand. Online store with a suit customiser and appointment booking. Joined near the end of a late project to help finish it, completing the remaining work, fixing earlier bugs and releasing the store.',
 						},
 					],
 				},
@@ -121,30 +160,18 @@ export const PROFILE = profileSchema.parse({
 			role: 'Software Engineer',
 			period: { start: '2021-08', end: '2024-03' },
 			description:
-				'Crypto startup running token launches, among them Kanga Exchange, Metahero, Everdome and Fame MMA. I built the web apps around its products, front end and back end.',
+				'Crypto startup running token launches, including Kanga Exchange, Metahero, Everdome and Fame MMA. I built the web apps for its products across front end and back end.',
 			groups: [
 				{
 					title: 'Projects',
 					items: [
-						{
-							text: 'Tenset Infinity, the staking platform with airdrops: one of the main contributors to both versions, first in Vue, then in React',
-						},
-						{
-							text: 'An AI assistant on the OpenAI API (2023): a NestJS and PostgreSQL service with vector search that answered community questions on Discord, Telegram and LINE, plus an admin panel in Remix',
-						},
-						{
-							text: 'Main company website and the shared React component library',
-						},
-						{
-							text: 'NFT marketplace with auctions, vesting tools and internal token-burning applications',
-						},
-						{
-							text: 'REST APIs in NestJS that read data from smart contracts, and scripts for analysing blockchain data',
-						},
-						{
-							text: 'The API behind Tenset Governance, where 10SET holders vote in community polls with a weight based on their subscription tier',
-						},
-					],
+						'Tenset Infinity, the staking platform with airdrops: one of the main contributors to both versions, first in Vue, then in React',
+						'An AI assistant on the OpenAI API (2023): a NestJS and PostgreSQL service with vector search that answered community questions on Discord, Telegram and LINE, plus an admin panel in Remix',
+						'Main company website and the shared React component library',
+						'NFT marketplace with auctions, vesting tools and internal token-burning applications',
+						'REST APIs in NestJS reading data from smart contracts, and scripts for analysing blockchain data',
+						'The API behind Tenset Governance, where 10SET holders vote in community polls weighted by their subscription tier',
+					].map(text => ({ text })),
 				},
 			],
 		},
@@ -205,7 +232,10 @@ export const PROFILE = profileSchema.parse({
 					technology: 'TanStack Start, Router, Query',
 					usedAt: ['rigtch.fm', 'Ludus AI'],
 				},
-				{ technology: 'Remix, React Router 7', usedAt: ['Ludus AI', 'Tenset'] },
+				{
+					technology: 'Remix, React Router 7',
+					usedAt: ['Ludus AI before TanStack Start', 'Tenset'],
+				},
 				{
 					technology: 'Next.js',
 					usedAt: ['Blazity', `rigtch.fm until ${oldWebStackUntil}`],
@@ -213,6 +243,7 @@ export const PROFILE = profileSchema.parse({
 				{ technology: 'Vue', usedAt: ['Tenset', 'own projects'] },
 				{ technology: 'Vite', usedAt: ['rigtch.fm', 'Ludus AI', 'Tenset'] },
 				{ technology: 'Tailwind CSS', usedAt: ['rigtch.fm', 'Ludus AI'] },
+				{ technology: 'React Native, Expo', usedAt: ['rigtch.fm mobile app'] },
 				{
 					technology: 'Storybook',
 					usedAt: ['Blazity', 'rigtch.fm', 'own projects'],
@@ -228,7 +259,7 @@ export const PROFILE = profileSchema.parse({
 				},
 				{
 					technology: 'Bun, Node.js',
-					usedAt: ['rigtch.fm on Bun', 'Node.js before'],
+					usedAt: ['rigtch.fm on Bun', 'Node.js earlier'],
 				},
 				{
 					technology: 'oRPC',
@@ -251,7 +282,10 @@ export const PROFILE = profileSchema.parse({
 				},
 				{
 					technology: 'OAuth',
-					usedAt: ['Ludus AI', 'Spotify login in rigtch.fm'],
+					usedAt: [
+						'Ludus AI plugin authorization',
+						'Spotify login in rigtch.fm',
+					],
 				},
 				{ technology: 'Better Auth', usedAt: ['rigtch.fm'] },
 				{ technology: 'tRPC', usedAt: [`rigtch.fm until ${oldWebStackUntil}`] },
@@ -271,7 +305,7 @@ export const PROFILE = profileSchema.parse({
 				{ technology: 'Drizzle', usedAt: ['rigtch.fm', 'Ludus AI'] },
 				{
 					technology: 'Prisma',
-					usedAt: ['Ludus AI', 'rigtch.fm before Drizzle', 'Visegrad24'],
+					usedAt: ['Ludus AI and rigtch.fm before Drizzle', 'Visegrad24'],
 				},
 				{ technology: 'TypeORM', usedAt: ['rigtch.fm until 2024'] },
 				{ technology: 'S3-compatible storage', usedAt: ['rigtch.fm'] },
@@ -280,7 +314,7 @@ export const PROFILE = profileSchema.parse({
 		{
 			title: 'Payments and analytics',
 			entries: [
-				{ technology: 'Stripe', usedAt: ['Ludus AI'] },
+				{ technology: 'Stripe', usedAt: ['Ludus AI billing'] },
 				{ technology: 'Dodo Payments', usedAt: ['rigtch.fm'] },
 				{ technology: 'PostHog, Sentry', usedAt: ['rigtch.fm', 'Ludus AI'] },
 				{
@@ -293,7 +327,10 @@ export const PROFILE = profileSchema.parse({
 		{
 			title: 'Infrastructure',
 			entries: [
-				{ technology: 'Cloudflare', usedAt: ['Ludus AI'] },
+				{
+					technology: 'Cloudflare',
+					usedAt: ['Workers, WAF and Zero Trust at Ludus AI'],
+				},
 				{ technology: 'Google Cloud', usedAt: ['Ludus AI'] },
 				{ technology: 'Docker', usedAt: ['Ludus AI'] },
 				{
@@ -348,7 +385,7 @@ export const PROFILE = profileSchema.parse({
 		},
 	],
 	work: {
-		intro: 'My own product first, then the jobs, newest first.',
+		intro: 'My own product first, then my jobs, newest first.',
 		weeklyStripLegend:
 			'One square is one week of my GitHub and GitLab contributions.',
 	},
