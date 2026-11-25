@@ -1,77 +1,77 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @plugin "@tailwindcss/typography";
 
 @theme {
-  --color-*: initial;
-  --color-bg: #0a0a0b;
-  --color-cell: #171615;
-  --color-ink: #ece8df;
-  --color-body: #d6d2c8;
-  --color-dim: #aaa59b;
-  --color-faint: #7f7a70;
-  --color-line: #272724;
-  --color-line-strong: #3b3a35;
-  --color-accent: #ff5a2e;
-  --color-on-accent: #0a0a0b;
-  --color-level-1: #3a1a10;
-  --color-level-2: #6e2a14;
-  --color-level-3: #b23f1a;
-  --color-level-4: #ff5a2e;
-  --color-level-5: #ffc2a3;
+	--color-*: initial;
+	--color-bg: #0a0a0b;
+	--color-cell: #171615;
+	--color-ink: #ece8df;
+	--color-body: #d6d2c8;
+	--color-dim: #aaa59b;
+	--color-faint: #7f7a70;
+	--color-line: #272724;
+	--color-line-strong: #3b3a35;
+	--color-accent: #ff5a2e;
+	--color-on-accent: #0a0a0b;
+	--color-level-1: #3a1a10;
+	--color-level-2: #6e2a14;
+	--color-level-3: #b23f1a;
+	--color-level-4: #ff5a2e;
+	--color-level-5: #ffc2a3;
 
-  --font-sans: var(--font-archivo);
-  --font-mono: var(--font-martian-mono);
+	--font-sans: var(--font-archivo);
+	--font-mono: var(--font-martian-mono);
 
-  --breakpoint-xs: 35rem;
+	--breakpoint-xs: 35rem;
 }
 
 @utility heading {
-  font-family: var(--font-mono);
-  font-weight: 800;
-  font-stretch: 75%;
-  letter-spacing: -0.045em;
+	font-family: var(--font-mono);
+	font-weight: 800;
+	font-stretch: 75%;
+	letter-spacing: -0.045em;
 }
 
 @utility numeric {
-  font-family: var(--font-mono);
-  font-stretch: 80%;
-  font-variant-numeric: tabular-nums;
+	font-family: var(--font-mono);
+	font-stretch: 80%;
+	font-variant-numeric: tabular-nums;
 }
 
 @layer base {
-  html {
-    color-scheme: dark;
-    background: var(--color-bg);
-  }
+	html {
+		color-scheme: dark;
+		background: var(--color-bg);
+	}
 
-  body {
-    font-size: 15.5px;
-    line-height: 1.55;
-  }
+	body {
+		font-size: 15.5px;
+		line-height: 1.55;
+	}
 
-  ::selection {
-    background: var(--color-accent);
-    color: var(--color-on-accent);
-  }
+	::selection {
+		background: var(--color-accent);
+		color: var(--color-on-accent);
+	}
 }
 
 .prose {
-  --tw-prose-body: var(--color-body);
-  --tw-prose-headings: var(--color-ink);
-  --tw-prose-lead: var(--color-dim);
-  --tw-prose-links: var(--color-ink);
-  --tw-prose-bold: var(--color-ink);
-  --tw-prose-counters: var(--color-dim);
-  --tw-prose-bullets: var(--color-accent);
-  --tw-prose-hr: var(--color-line);
-  --tw-prose-quotes: var(--color-dim);
-  --tw-prose-quote-borders: var(--color-accent);
-  --tw-prose-captions: var(--color-faint);
-  --tw-prose-kbd: var(--color-ink);
-  --tw-prose-kbd-shadows: var(--color-line-strong);
-  --tw-prose-code: var(--color-ink);
-  --tw-prose-pre-code: var(--color-ink);
-  --tw-prose-pre-bg: var(--color-cell);
-  --tw-prose-th-borders: var(--color-line);
-  --tw-prose-td-borders: var(--color-line);
+	--tw-prose-body: var(--color-body);
+	--tw-prose-headings: var(--color-ink);
+	--tw-prose-lead: var(--color-dim);
+	--tw-prose-links: var(--color-ink);
+	--tw-prose-bold: var(--color-ink);
+	--tw-prose-counters: var(--color-dim);
+	--tw-prose-bullets: var(--color-accent);
+	--tw-prose-hr: var(--color-line);
+	--tw-prose-quotes: var(--color-dim);
+	--tw-prose-quote-borders: var(--color-accent);
+	--tw-prose-captions: var(--color-faint);
+	--tw-prose-kbd: var(--color-ink);
+	--tw-prose-kbd-shadows: var(--color-line-strong);
+	--tw-prose-code: var(--color-ink);
+	--tw-prose-pre-code: var(--color-ink);
+	--tw-prose-pre-bg: var(--color-cell);
+	--tw-prose-th-borders: var(--color-line);
+	--tw-prose-td-borders: var(--color-line);
 }

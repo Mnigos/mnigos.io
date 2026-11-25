@@ -1,0 +1,3 @@
+[run]
+# `bun run` and `bun <bin>` started at the root run node-shebang tools (astro, ultracite, vitest) on Bun; bunx needs --bun.
+bun = true

@@ -2,7 +2,8 @@
 import { getCollection } from 'astro:content'
 import Layout from '../../layouts/Layout.astro'
 
-const posts = (await getCollection('blog', ({ data }) => !data.draft)).toSorted(
+const published = await getCollection('blog', ({ data }) => !data.draft)
+const posts = published.toSorted(
   (a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf()
 )
 ---
