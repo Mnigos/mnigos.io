@@ -49,9 +49,9 @@ Igor Makowski's personal site and blog: a static Astro 7 site with MDX posts, Ta
 ## Styling
 
 - No arbitrary Tailwind values or variants (`text-[13px]`, `gap-[9px]`, `aria-[current=page]:`). Use the theme in `src/styles/global.css`:
-  - the type scale `text-micro`, `text-caption`, `text-small`, `text-body`, `text-title`, `text-lede`, `text-heading`, `text-figure`, each with its own line height;
+  - the type scale `text-micro`, `text-caption`, `text-small`, `text-base`, `text-title`, `text-copy`, `text-lede`, `text-heading`, `text-figure`, `text-page-title`, `text-headline`, `text-display`, `text-display-lg`, each with its own line height; where an element's line box sets the layout, keep it with a spacing line height (`text-small/5`);
   - the spacing scale, any multiple of 0.25 (`py-3.25` for 13px);
-  - `tracking-figure`, `max-w-lede`, `max-w-page`, the `grid-cols-aside`, `grid-cols-facts` and `grid-cols-year` utilities and the `current-page` variant.
+  - `tracking-figure`, `max-w-lede`, `max-w-intro`, `max-w-measure`, `max-w-page`, the `grid-cols-aside`, `grid-cols-facts`, `grid-cols-year`, `grid-cols-terms`, `grid-cols-stack` and `bullet` utilities and the `current-page`, `term` and `description` variants.
 - When a value is missing, add a token or utility to `global.css` named by its role, not its number. Plain CSS declarations in `global.css` are fine. (enforced by `bun run check`)
 
 ## Writing

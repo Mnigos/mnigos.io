@@ -35,13 +35,13 @@ const rows = getJobGroupRows(job.groups)
         <ContributionCell
           level={getContributionLevel(total, WEEKLY_THRESHOLDS)}
           title={`${total} in the week of ${weekStart}`}
-          class="size-[9px]"
+          class="size-2.25"
         />
       ))
     }
   </div>
-  {legend && <p class="mt-2 text-[12.5px] text-faint">{legend}</p>}
-  <p class="mt-4 max-w-[36em] text-[17px] text-body">{job.description}</p>
+  {legend && <p class="mt-2 text-caption/4.75 text-faint">{legend}</p>}
+  <p class="mt-4 max-w-measure text-copy text-body">{job.description}</p>
   {
     rows.length > 0 && (
       <DefinitionList>
@@ -50,9 +50,9 @@ const rows = getJobGroupRows(job.groups)
             <dt>{row.term}</dt>
             <dd>
               {'items' in row ? (
-                <ul class="grid gap-[7px]">
+                <ul class="grid gap-1.75">
                   {row.items.map(item => (
-                    <li class="relative pl-4 before:absolute before:top-[0.62em] before:left-0 before:size-[5px] before:bg-accent">
+                    <li class="bullet">
                       {item}
                     </li>
                   ))}

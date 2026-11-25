@@ -18,25 +18,25 @@ const newTab = (url: string) =>
   url.startsWith('https://') ? { target: '_blank', rel: 'noreferrer' } : {}
 
 const sectionHead = 'flex items-baseline justify-between gap-4 border-b-2 border-ink pb-3'
-const sectionLink = 'text-sm text-dim hover:text-accent'
+const sectionLink = 'text-small/5.25 text-dim hover:text-accent'
 const row =
-  'grid grid-cols-[1fr_auto] items-baseline gap-x-5 gap-y-1 border-b border-line py-[13px] max-xs:grid-cols-1'
-const rowTitle = 'text-[16.5px] font-semibold hover:text-accent'
+  'grid grid-cols-aside items-baseline gap-x-5 gap-y-1 border-b border-line py-3.25 max-xs:grid-cols-1'
+const rowTitle = 'text-title font-semibold hover:text-accent'
 const rowValue = 'whitespace-nowrap text-right text-dim max-xs:text-left'
 ---
 
 <Layout title={HOME_PAGE.title} description={HOME_PAGE.description}>
-  <section class="grid grid-cols-[1fr_auto] items-end gap-x-7 gap-y-3.5 pb-7 max-xs:grid-cols-1">
-    <div class="max-w-[24em] text-[19px] leading-[1.45] text-dim">
+  <section class="grid grid-cols-aside items-end gap-x-7 gap-y-3.5 pb-7 max-xs:grid-cols-1">
+    <div class="max-w-lede text-lede text-dim">
       <h1 class="inline font-bold text-ink">{PROFILE.name}.</h1>{' '}{PROFILE.intro}
     </div>
-    <div class="flex flex-wrap gap-1.5 pb-[3px]">
+    <div class="flex flex-wrap gap-1.5 pb-0.75">
       {
         PROFILE.links.map(({ label, url }) => (
           <a
             href={url}
             {...newTab(url)}
-            class="border border-line-strong px-[11px] py-[5px] text-[13px] font-medium text-ink hover:border-accent hover:text-accent"
+            class="border border-line-strong px-2.75 py-1.25 text-caption font-medium text-ink hover:border-accent hover:text-accent"
           >
             {label}
           </a>
@@ -53,7 +53,7 @@ const rowValue = 'whitespace-nowrap text-right text-dim max-xs:text-left'
     }
   </section>
   <div
-    class="mt-3.5 ml-[74px] flex items-center gap-[5px] text-[12.5px] text-faint max-xs:ml-0"
+    class="mt-3.5 ml-18.5 flex items-center gap-1.25 text-caption/4.75 text-faint max-xs:ml-0"
   >
     <span>{HOME_PAGE.contributions.less}</span>
     {[0, 1, 2, 3, 4, 5].map(level => <ContributionCell level={level} class="w-2.5" />)}
@@ -61,13 +61,13 @@ const rowValue = 'whitespace-nowrap text-right text-dim max-xs:text-left'
     <span class="ml-auto max-xs:hidden">{HOME_PAGE.contributions.note}</span>
   </div>
 
-  <div class="mt-[34px]">
+  <div class="mt-8.5">
     <ProductFacts product={PROFILE.product} />
   </div>
 
   <section class="mt-11">
     <div class={sectionHead}>
-      <h2 class="heading text-[21px] leading-[1.1]">{HOME_PAGE.openSource.heading}</h2>
+      <h2 class="heading text-heading">{HOME_PAGE.openSource.heading}</h2>
       <a href={PROFILE.openSource.link.url} {...newTab(PROFILE.openSource.link.url)} class={sectionLink}>
         {PROFILE.openSource.link.label}<span aria-hidden="true"> ↗</span>
       </a>
@@ -78,10 +78,10 @@ const rowValue = 'whitespace-nowrap text-right text-dim max-xs:text-left'
           <li class={row}>
             <span>
               <a href={url} {...newTab(url)} class={rowTitle}>{name}</a>
-              {note && <small class="mt-px block text-[14.5px] text-dim">{note}</small>}
+              {note && <small class="mt-px block text-small text-dim">{note}</small>}
             </span>
-            <span class:list={[rowValue, 'text-[14.5px]']}>
-              <b class="numeric mr-1 text-[17px] font-bold text-accent">
+            <span class:list={[rowValue, 'text-small']}>
+              <b class="numeric mr-1 text-title/6.5 font-bold text-accent">
                 {formatFactValue(fact.value)}
               </b>
               {fact.label}
@@ -94,7 +94,7 @@ const rowValue = 'whitespace-nowrap text-right text-dim max-xs:text-left'
 
   <section class="mt-11">
     <div class={sectionHead}>
-      <h2 class="heading text-[21px] leading-[1.1]">{HOME_PAGE.blog.heading}</h2>
+      <h2 class="heading text-heading">{HOME_PAGE.blog.heading}</h2>
       <a href="/blog" class={sectionLink}>{HOME_PAGE.blog.allPosts}</a>
     </div>
     <ul>
@@ -105,7 +105,7 @@ const rowValue = 'whitespace-nowrap text-right text-dim max-xs:text-left'
           return (
             <li class={row}>
               <a href={`/blog/${post.id}`} class={rowTitle}>{post.data.title}</a>
-              <time datetime={date} class:list={[rowValue, 'numeric text-[13.5px]']}>{date}</time>
+              <time datetime={date} class:list={[rowValue, 'numeric text-caption/5.25']}>{date}</time>
             </li>
           )
         })

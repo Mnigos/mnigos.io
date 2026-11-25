@@ -22,32 +22,50 @@
 	--font-sans: var(--font-archivo);
 	--font-mono: var(--font-martian-mono);
 
+	--text-*: initial;
+	--leading-*: initial;
 	--text-micro: 0.71875rem;
 	--text-micro--line-height: 1.55;
 	--text-caption: 0.8125rem;
 	--text-caption--line-height: 1.55;
 	--text-small: 0.90625rem;
 	--text-small--line-height: 1.55;
-	--text-body: 0.96875rem;
-	--text-body--line-height: 1.55;
+	--text-base: 0.96875rem;
+	--text-base--line-height: 1.55;
 	--text-title: 1.03125rem;
 	--text-title--line-height: 1.55;
+	--text-copy: 1.0625rem;
+	--text-copy--line-height: 1.55;
 	--text-lede: 1.1875rem;
 	--text-lede--line-height: 1.45;
 	--text-heading: 1.3125rem;
 	--text-heading--line-height: 1.1;
 	--text-figure: 1.4375rem;
 	--text-figure--line-height: 1.2;
+	--text-page-title: 1.5rem;
+	--text-page-title--line-height: 2rem;
+	--text-headline: 1.6875rem;
+	--text-headline--line-height: 1.1;
+	--text-display: 2.25rem;
+	--text-display--line-height: 1;
+	--text-display-lg: 2.75rem;
+	--text-display-lg--line-height: 1;
 
+	--tracking-*: initial;
 	--tracking-figure: -0.03em;
 
+	--container-*: initial;
 	--container-lede: 24em;
+	--container-intro: 34em;
+	--container-measure: 36em;
 	--container-page: 48rem;
 
 	--breakpoint-xs: 35rem;
 }
 
 @custom-variant current-page (&[aria-current='page']);
+@custom-variant term (& > dt);
+@custom-variant description (& > dd);
 
 @utility heading {
 	font-family: var(--font-mono);
@@ -75,6 +93,29 @@
 	grid-template-columns: 3.875rem 1fr;
 }
 
+@utility grid-cols-terms {
+	grid-template-columns: 9.25rem 1fr;
+}
+
+@utility grid-cols-stack {
+	grid-template-columns: 11.875rem 1fr;
+}
+
+@utility bullet {
+	position: relative;
+	padding-left: calc(var(--spacing) * 4);
+
+	&::before {
+		content: '';
+		position: absolute;
+		top: 0.62em;
+		left: 0;
+		width: calc(var(--spacing) * 1.25);
+		height: calc(var(--spacing) * 1.25);
+		background: var(--color-accent);
+	}
+}
+
 @layer base {
 	html {
 		color-scheme: dark;
@@ -82,8 +123,8 @@
 	}
 
 	body {
-		font-size: var(--text-body);
-		line-height: var(--text-body--line-height);
+		font-size: var(--text-base);
+		line-height: var(--text-base--line-height);
 	}
 
 	::selection {

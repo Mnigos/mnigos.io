@@ -20,16 +20,16 @@ const formatTitle = (count: number, date: string) =>
   `${count} ${count === 1 ? 'contribution' : 'contributions'} on ${date}`
 ---
 
-<div class="grid grid-cols-[62px_1fr] items-end gap-3 max-xs:grid-cols-1 max-xs:gap-1">
+<div class="grid grid-cols-year items-end gap-3 max-xs:grid-cols-1 max-xs:gap-1">
   <div class="pb-0.5 max-xs:flex max-xs:items-baseline max-xs:gap-2.5">
-    <div class="heading text-[23px] leading-none">{year}</div>
-    <div class="numeric mt-1.5 text-[11.5px] text-faint">{total.toLocaleString('en-US')}</div>
+    <div class="heading text-figure leading-none">{year}</div>
+    <div class="numeric mt-1.5 text-micro text-faint">{total.toLocaleString('en-US')}</div>
   </div>
-  <div class="flex min-w-0 gap-[9px]">
+  <div class="flex min-w-0 gap-2.25">
     {
       segments.map(({ fromWeek, toWeek, label }) => (
         <div class="min-w-0" style={`flex: ${toWeek - fromWeek} ${toWeek - fromWeek} 0`}>
-          <div class="h-[22px] truncate text-[13px] text-dim max-xs:text-[11.5px]">
+          <div class="h-5.5 truncate text-caption text-dim max-xs:text-micro">
             {label && <b class="font-semibold text-ink">{label.company}</b>}
             {label?.role && ` · ${label.role}`}
           </div>
