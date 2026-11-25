@@ -128,7 +128,7 @@ describe('fetchContributionYears', () => {
 		'normalises $year to $days dates and preserves the API total',
 		async ({ year, days, march1 }) => {
 			stubCalendars()
-			const years = await fetchContributionYears(token)
+			const { years } = await fetchContributionYears(token)
 			const counts = Array.from({ length: days }, () => 0)
 			counts[0] = 4
 			if (year === 2024) counts[59] = 13
@@ -146,7 +146,7 @@ describe('fetchContributionYears', () => {
 
 	it('requests every UTC year from 2021 through the current year with the token only in authorization', async () => {
 		const fetchMock = stubCalendars()
-		const years = await fetchContributionYears(token)
+		const { years } = await fetchContributionYears(token)
 
 		expect(years.map(({ year }) => year)).toEqual([
 			2021, 2022, 2023, 2024, 2025, 2026,
@@ -175,7 +175,68 @@ describe('fetchContributionYears', () => {
 		}
 	})
 
-	it.each([401, 403, 500])(
+	it.each([
+		{
+			name: 'present',
+			expiration: '2026-12-25 00:00:00 UTC',
+			laterExpiration: '2027-01-01 00:00:00 UTC',
+		},
+	])(
+		'returns the first response expiration when it is $name',
+		async ({ expiration, laterExpiration }) => {
+			vi.stubGlobal(
+				'fetch',
+				vi.fn<typeof fetch>().mockImplementation(async (_url, init) => {
+					const { variables } = readRequestBody(init)
+					const year = Number(variables.from.slice(0, 4))
+					const header = year === 2021 ? expiration : laterExpiration
+
+					return Response.json(calendarResponse(year), {
+						headers:
+							header === undefined
+								? {}
+								: { 'github-authentication-token-expiration': header },
+					})
+				})
+			)
+
+			const result = await fetchContributionYears(token)
+
+			expect(result.tokenExpiration).toBe(expiration)
+			expect(result.years).toHaveLength(6)
+			expect(JSON.stringify(result)).not.toContain(token)
+		}
+	)
+
+	it('returns undefined when no response has an expiration header', async () => {
+		stubCalendars()
+		const result = await fetchContributionYears(token)
+
+		expect(result.tokenExpiration).toBeUndefined()
+	})
+
+	it('explains how to rotate a rejected token without exposing it', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi
+				.fn<typeof fetch>()
+				.mockImplementation(async () =>
+					Response.json({ message: 'Bad credentials' }, { status: 401 })
+				)
+		)
+
+		const failure = await fetchContributionYears(token).catch(
+			(error: unknown) => error
+		)
+
+		expect(failure).toBeInstanceOf(Error)
+		expect(String(failure)).toBe(
+			'Error: GitHub contributions 2021: HTTP 401, GitHub rejected GH_CONTRIBUTIONS_TOKEN. Create a classic token with the read:user scope, store it with `gh secret set GH_CONTRIBUTIONS_TOKEN --repo Mnigos/mnigos.io`, then rerun the workflow (docs/deploy.md)'
+		)
+		expect(inspect(failure, { depth: Infinity })).not.toContain(token)
+	})
+
+	it.each([403, 500])(
 		'throws HTTP %i without exposing the response body or token',
 		async status => {
 			vi.stubGlobal(
@@ -189,7 +250,9 @@ describe('fetchContributionYears', () => {
 				(error: unknown) => error
 			)
 			expect(failure).toBeInstanceOf(Error)
-			expect(String(failure)).toContain(`HTTP ${status}`)
+			expect(String(failure)).toBe(
+				`Error: GitHub contributions 2021: HTTP ${status}`
+			)
 			expect(String(failure)).not.toContain(token)
 		}
 	)
