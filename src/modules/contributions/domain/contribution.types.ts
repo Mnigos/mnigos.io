@@ -36,3 +36,9 @@ export interface WeeklyTotal {
 	weekStart: string
 	total: number
 }
+
+/** Pushes, commits, merge requests opened, merge requests merged, approvals, issues opened, issues closed, comments, branch deletions, other. */
+export type GitLabEventCounts = readonly number[]
+
+/** GitLab event counts by ISO date, only for days with events. */
+export type GitLabEventDays = Readonly<Record<string, GitLabEventCounts>>

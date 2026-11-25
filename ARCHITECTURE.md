@@ -27,6 +27,16 @@ Outside `src/modules/`, `src/` holds only `src/content.config.ts` with its spec,
 4. `presentation/` renders it: `.astro` components wrap the content in `site/presentation/layout.astro`, and `blog/presentation/rss.handler.ts` builds the feed.
 5. `src/pages/` maps each URL to one of those components or handlers, and `astro build` writes static HTML, `rss.xml` and the sitemap into `dist/`.
 
+## Contribution data
+
+The home page grid and the yearly totals show GitHub and GitLab contributions added per day. `loadContributionYears` in `contributions/infrastructure/contributions.client.ts` is the only place that combines them, so every page that reads it gets the combined numbers.
+
+- GitHub: the contribution calendar from the GitHub GraphQL API, one request per year from 2021. With `GH_CONTRIBUTIONS_TOKEN` set the build fetches it, otherwise it reads the committed `contributions.snapshot.json`. `bun run contributions:refresh` rewrites that snapshot and touches only GitHub data.
+- GitLab: `gitlab-events.snapshot.json` holds daily event counts from the gitlab.com events API for the account Igor used at Tenset, fetched on 2026-11-25. A day counts commits, merge requests opened, issues opened and approvals.
+- Gaps: GitLab keeps events for 5 years, so days before 2021-12-08 were already deleted. The self-hosted GitLab used after mid January 2024 was never available, so nothing after 2024-01-16 is counted.
+- Commit counts come from push events, so a rebased and force-pushed branch can count the same commit again.
+- The GitLab file is the only durable copy of this data. It keeps all ten event counts per day, and neither the build nor the refresh script regenerates it.
+
 ## Decision records
 
 - [0001: Naming and layering conventions](docs/decisions/0001-naming-and-layering-conventions.md)

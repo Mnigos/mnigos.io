@@ -1,7 +1,9 @@
 import { GraphqlResponseError, graphql } from '@octokit/graphql'
 import type { ContributionYear } from '../domain/contribution.types'
+import { addGitLabContributions } from '../domain/gitlab-contributions.helper'
 import { getDayOfYear, getDaysInYear } from '../domain/iso-date.helper'
 import { env } from './contributions.config'
+import gitLabEvents from './gitlab-events.snapshot.json'
 
 const FIRST_YEAR = 2021
 const CALENDAR_QUERY = `query ($from: DateTime!, $to: DateTime!) {
@@ -94,7 +96,7 @@ export async function fetchContributionYears(token: string) {
 	)
 }
 
-/** Fetches from GitHub when `GH_CONTRIBUTIONS_TOKEN` is set, so a failing fetch fails the build; otherwise reads the committed snapshot. */
+/** GitHub contributions plus the GitLab snapshot per day. Fetches from GitHub when `GH_CONTRIBUTIONS_TOKEN` is set, so a failing fetch fails the build; otherwise reads the committed snapshot. */
 export async function loadContributionYears(): Promise<ContributionYear[]> {
 	const token = env.GH_CONTRIBUTIONS_TOKEN
 
@@ -104,7 +106,7 @@ export async function loadContributionYears(): Promise<ContributionYear[]> {
 		console.info(
 			`Contributions: GH_CONTRIBUTIONS_TOKEN is not set, using the snapshot generated at ${snapshot.generatedAt}`
 		)
-		return snapshot.years
+		return addGitLabContributions(snapshot.years, gitLabEvents.days)
 	}
 
 	const years = await fetchContributionYears(token)
@@ -112,5 +114,5 @@ export async function loadContributionYears(): Promise<ContributionYear[]> {
 	console.info(
 		`Contributions: fetched from GitHub, ${years.map(({ year, total }) => `${year}: ${total}`).join(', ')}`
 	)
-	return years
+	return addGitLabContributions(years, gitLabEvents.days)
 }
