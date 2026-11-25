@@ -16,5 +16,7 @@ export default defineConfig({
 		...(ultracite.ignorePatterns ?? []),
 		// Written by the contributions refresh script, one line per year.
 		'src/modules/contributions/infrastructure/contributions.snapshot.json',
+		// Written once by a conversion script, one line per day.
+		'src/modules/contributions/infrastructure/gitlab-events.snapshot.json',
 	],
 })
