@@ -15,7 +15,8 @@ describe('PROFILE', () => {
 	test('keeps the approved work intro and weekly strip legend', () => {
 		expect(PROFILE.work).toStrictEqual({
 			intro: 'My own product first, then the jobs, newest first.',
-			weeklyStripLegend: 'One square is one week of my GitHub contributions.',
+			weeklyStripLegend:
+				'One square is one week of my GitHub and GitLab contributions.',
 		})
 	})
 
