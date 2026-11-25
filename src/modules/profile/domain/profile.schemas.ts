@@ -1,13 +1,15 @@
 import { z } from 'zod'
 
 const textSchema = z.string().min(1)
+const linkSchema = z.object({ label: textSchema, url: z.url() })
+
 const factFields = {
 	label: textSchema,
 	/** An `https://` URL for public data, a short description for private rigtch.fm data. */
 	source: textSchema,
 	checkedOn: z.iso.date(),
 }
-const linkSchema = z.object({ label: textSchema, url: z.url() })
+
 const jobGroupSchema = z.object({
 	title: textSchema.optional(),
 	items: z.array(z.object({ title: textSchema.optional(), text: textSchema })),
@@ -15,13 +17,16 @@ const jobGroupSchema = z.object({
 
 export const monthSchema = z.string().regex(/^\d{4}-(?:0[1-9]|1[0-2])$/u)
 export type Month = z.infer<typeof monthSchema>
+
 export const numberFactSchema = z.object({
 	value: z.int().min(0),
 	...factFields,
 })
 export type NumberFact = z.infer<typeof numberFactSchema>
+
 export const monthFactSchema = z.object({ value: monthSchema, ...factFields })
 export type MonthFact = z.infer<typeof monthFactSchema>
+
 export const productSchema = z.object({
 	name: textSchema,
 	url: z.url(),
@@ -33,6 +38,7 @@ export const productSchema = z.object({
 	facts: z.array(z.union([numberFactSchema, monthFactSchema])),
 })
 export type Product = z.infer<typeof productSchema>
+
 /** `period.end` is absent while the job is current. */
 export const jobSchema = z.object({
 	company: textSchema,
@@ -48,6 +54,7 @@ export const jobSchema = z.object({
 	groups: z.array(jobGroupSchema),
 })
 export type Job = z.infer<typeof jobSchema>
+
 export const openSourceProjectSchema = z.object({
 	name: textSchema,
 	note: textSchema.optional(),
@@ -55,6 +62,7 @@ export const openSourceProjectSchema = z.object({
 	fact: numberFactSchema,
 })
 export type OpenSourceProject = z.infer<typeof openSourceProjectSchema>
+
 /** The page joins `usedAt` with ", ". */
 export const stackGroupSchema = z.object({
 	title: textSchema,
@@ -63,6 +71,7 @@ export const stackGroupSchema = z.object({
 	),
 })
 export type StackGroup = z.infer<typeof stackGroupSchema>
+
 /** Jobs are newest first, so only the first one can still be current. */
 export const profileSchema = z.object({
 	name: textSchema,
