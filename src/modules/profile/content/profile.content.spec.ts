@@ -182,9 +182,8 @@ describe('PROFILE', () => {
 
 	test.each([
 		['PostgreSQL', 0, 'rigtch.fm with 362M plays'],
-		['BullMQ, Redis', 1, '17 queues'],
+		['BullMQ', 1, '17 queues'],
 		['oxlint', 0, 'rigtch.fm with 13 rules of my own'],
-		['oRPC', 1, '5 merged pull requests'],
 		['Next.js', 1, 'rigtch.fm until 02.2026'],
 		['tRPC', 0, 'rigtch.fm until 02.2026'],
 	] as const)(
@@ -197,6 +196,32 @@ describe('PROFILE', () => {
 			expect(entry?.usedAt[index]).toBe(expected)
 		}
 	)
+
+	test.each([
+		['NestJS', ['rigtch.fm', 'Tenset']],
+		['Hono', ['rigtch.fm', 'platform-hono']],
+		['Node.js', ['every job and project']],
+		['Bun', ['rigtch.fm']],
+		['BullMQ', ['rigtch.fm', '17 queues']],
+		['Redis', ['rigtch.fm', 'Ludus AI']],
+		['oRPC', ['rigtch.fm', 'contributor']],
+		['OAuth', ['Ludus AI', 'rigtch.fm', 'Blazity']],
+		['Prisma', ['Ludus AI and rigtch.fm before Drizzle', 'Blazity']],
+		['Vercel', ['rigtch.fm web until 02.2026', 'Blazity']],
+		[
+			'Vitest, Playwright, Testing Library',
+			['rigtch.fm', 'Ludus AI', 'Blazity'],
+		],
+		['Claude Code, Codex, T3 Code', ['every day', 'side by side']],
+		['Strapi', ['own projects', 'Tenset']],
+	] as const)('keeps one approved stack row for %s', (technology, usedAt) => {
+		expect(
+			PROFILE.stack
+				.flatMap(group => group.entries)
+				.filter(entry => entry.technology === technology)
+				.map(entry => entry.usedAt)
+		).toStrictEqual([usedAt])
+	})
 
 	test('keeps profile links in the approved order', () => {
 		expect(PROFILE.links).toStrictEqual([
