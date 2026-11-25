@@ -29,8 +29,6 @@ describe('PROFILE', () => {
 			intro: 'My own product first, then my jobs, newest first.',
 			weeklyStripLegend:
 				'One square is one week of my GitHub and GitLab contributions.',
-			commitStripLegend:
-				'One square is one week of my git commits to rigtch.fm since November 2022.',
 		})
 	})
 

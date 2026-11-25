@@ -43,7 +43,7 @@ The home page grid and the yearly totals show GitHub and GitLab contributions ad
 
 ### rigtch.fm commits
 
-The rigtch.fm section on the work page shows a strip of weekly commit counts from 2022-11-01 to the current week, on its own thresholds because weekly commit sums are far smaller than contribution sums. `loadRigtchFmCommitYears` in `contributions/infrastructure/rigtch-fm-commits.client.ts` adds up two committed snapshots that hold only dates and counts. These numbers stay out of the home page grid and the yearly totals.
+The rigtch.fm section on the work page and the `/rigtch` page show a strip of weekly commit counts from 2022-11-01 to the current week, on its own thresholds because weekly commit sums are far smaller than contribution sums. `loadRigtchFmCommitYears` in `contributions/infrastructure/rigtch-fm-commits.client.ts` adds up two committed snapshots that hold only dates and counts. These numbers stay out of the home page grid and the yearly totals.
 
 - Sources: the private repositories `Rigtch/rigtch-fm-api` and `Rigtch/rigtch-fm-www`, both archived, and the monorepo `Rigtch/rigtch.fm`. Only commits on each repository's default branch count, merges included, because squash-merged pull request branches would count the same work twice.
 - Date rule: a commit counts on its author date converted to UTC. The author date is when the work was written and survives rebases and merges, while the commit date changes on every rebase. UTC matches the GitHub REST API and every other day count in this module.
