@@ -109,6 +109,10 @@ export const profileSchema = z.object({
 		projects: z.array(openSourceProjectSchema),
 	}),
 	stack: z.array(stackGroupSchema),
-	work: z.object({ intro: textSchema, weeklyStripLegend: textSchema }),
+	work: z.object({
+		intro: textSchema,
+		weeklyStripLegend: textSchema,
+		commitStripLegend: textSchema,
+	}),
 })
 export type Profile = z.infer<typeof profileSchema>

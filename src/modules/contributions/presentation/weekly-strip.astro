@@ -1,0 +1,33 @@
+---
+import { getContributionLevel } from '../domain/contribution-level.helper'
+import type {
+  ContributionLevelThresholds,
+  ContributionPeriod,
+  ContributionYear,
+} from '../domain/contribution.types'
+import { getWeeklyTotals } from '../domain/weekly-totals.helper'
+import ContributionCell from './contribution-cell.astro'
+
+interface Props {
+  years: ContributionYear[]
+  period: ContributionPeriod
+  thresholds: ContributionLevelThresholds
+  legend?: string
+}
+
+const { years, period, thresholds, legend } = Astro.props
+const weeks = getWeeklyTotals(years, period)
+---
+
+<div class="mt-4 flex flex-wrap gap-0.5">
+  {
+    weeks.map(({ weekStart, total }) => (
+      <ContributionCell
+        level={getContributionLevel(total, thresholds)}
+        title={`${total} in the week of ${weekStart}`}
+        class="size-2.25"
+      />
+    ))
+  }
+</div>
+{legend && <p class="mt-2 text-caption/4.75 text-faint">{legend}</p>}
