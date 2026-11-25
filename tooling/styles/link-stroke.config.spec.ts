@@ -11,12 +11,13 @@ const svg = readFileSync(
 )
 const theme = /@theme\s*\{([^}]+)\}/u.exec(css)?.[1] ?? ''
 const accent = /--color-accent:\s*([^;]+);/u.exec(theme)?.[1].trim()
-const utility =
+const inlineLink =
 	/@utility inline-link\s*\{([\s\S]+?)(?=\n@utility)/u.exec(css)?.[1] ?? ''
+const linkStroke = /@utility link-stroke\s*\{([^}]+)\}/u.exec(css)?.[1] ?? ''
 const approvedPath =
 	'M1.5 3.6 L 28 2.9 L 61 3.8 L 97 2.7 L 133 3.5 L 168 2.6 L 198.5 3.3 L 197.8 6.6 L 166 5.8 L 131 6.8 L 96 5.9 L 60 6.9 L 27 6.1 L 2.2 7.0 Z'
 
-describe('inline-link stroke asset contract', () => {
+describe('link stroke asset contract', () => {
 	it('fills the SVG with the theme accent colour', () => {
 		expect(accent).toMatch(/^#[\da-f]{6}$/iu)
 		expect(/\bfill=['"]([^'"]+)['"]/u.exec(svg)?.[1]).toBe(accent)
@@ -29,9 +30,19 @@ describe('inline-link stroke asset contract', () => {
 		)
 	})
 
-	it('uses the stroke asset in the inline-link utility', () => {
-		expect(utility).toMatch(
+	it('uses the stroke asset in the shared link-stroke utility', () => {
+		expect(linkStroke).toMatch(
 			/background:\s*url\(['"]\.\/link-stroke\.svg['"]\)/u
 		)
+	})
+
+	it('applies the shared stroke to inline links', () => {
+		expect(inlineLink).toMatch(/@apply\s+link-stroke\s*;/u)
+	})
+
+	it('references the stroke SVG exactly once in the stylesheet', () => {
+		expect([
+			...css.matchAll(/url\([^)]*link-stroke\.svg[^)]*\)/gu),
+		]).toHaveLength(1)
 	})
 })
