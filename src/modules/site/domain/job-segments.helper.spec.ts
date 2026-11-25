@@ -1,5 +1,5 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
-import * as contributionWeeks from '../../contributions/domain/contribution-weeks.helper'
+import { describe, expect, it } from 'vitest'
+import { getWeekCount } from '../../contributions/domain/contribution-weeks.helper'
 import { PROFILE } from '../../profile/content/profile.content'
 import type { Job } from '../../profile/domain/profile.schemas'
 import { getJobSegments } from './job-segments.helper'
@@ -13,10 +13,6 @@ function makeJob(period: Job['period'], company = 'Example'): Job {
 		groups: [],
 	}
 }
-
-afterEach(() => {
-	vi.restoreAllMocks()
-})
 
 describe('getJobSegments', () => {
 	it('leaves a year without jobs as one unlabeled segment', () => {
@@ -118,7 +114,7 @@ describe('getJobSegments', () => {
 				{
 					start: `${year}-01-01`,
 					fromWeek: 0,
-					toWeek: contributionWeeks.getWeekCount(year),
+					toWeek: getWeekCount(year),
 					label: { company: 'Example', role: 'Engineer' },
 				},
 			])
@@ -139,20 +135,18 @@ describe('getJobSegments', () => {
 		])
 	})
 
-	it('retains the role when the splitter returns exactly 20 columns', () => {
-		const jobs: Job[] = [makeJob({ start: '2024-01' })]
-		// Month boundaries cannot produce exactly 20 columns in a calendar year.
-		vi.spyOn(contributionWeeks, 'splitYearIntoSegments').mockReturnValueOnce([
-			{ start: '2024-01-01', fromWeek: 0, toWeek: 20 },
-		])
+	it('retains the role when a job segment spans 21 columns', () => {
+		const jobs: Job[] = [makeJob({ start: '2023-02', end: '2023-06' })]
 
-		expect(getJobSegments(2024, jobs)).toStrictEqual([
+		expect(getJobSegments(2023, jobs)).toStrictEqual([
+			{ start: '2023-01-01', fromWeek: 0, toWeek: 4 },
 			{
-				start: '2024-01-01',
-				fromWeek: 0,
-				toWeek: 20,
+				start: '2023-02-01',
+				fromWeek: 4,
+				toWeek: 25,
 				label: { company: 'Example', role: 'Engineer' },
 			},
+			{ start: '2023-07-01', fromWeek: 25, toWeek: 53 },
 		])
 	})
 
@@ -247,7 +241,7 @@ describe('getJobSegments', () => {
 			for (const [index, segment] of segments.slice(0, -1).entries()) {
 				expect(segment.toWeek).toBe(segments[index + 1]?.fromWeek)
 			}
-			expect(segments.at(-1)?.toWeek).toBe(contributionWeeks.getWeekCount(year))
+			expect(segments.at(-1)?.toWeek).toBe(getWeekCount(year))
 		}
 	)
 })
