@@ -1,38 +1,7 @@
 ---
-import { getCollection, render } from 'astro:content'
-import Layout from '../../layouts/Layout.astro'
+import PostPage from '../../modules/blog/presentation/post-page.astro'
 
-export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => !data.draft)
-
-  return posts.map(post => ({ params: { id: post.id }, props: { post } }))
-}
-
-const { post } = Astro.props
-const { Content } = await render(post)
+export { getPostPaths as getStaticPaths } from '../../modules/blog/infrastructure/posts.query'
 ---
 
-<Layout title={`${post.data.title} · mnigos`} description={post.data.description}>
-  <article>
-    <header>
-      <h1 class="heading text-2xl">
-        {post.data.title}
-      </h1>
-      <time
-        datetime={post.data.publishedAt.toISOString()}
-        class="numeric mt-2 block text-sm text-dim"
-      >
-        {
-          post.data.publishedAt.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-        }
-      </time>
-    </header>
-    <div class="prose mt-8 prose-headings:heading prose-a:decoration-accent prose-a:decoration-2 prose-a:underline-offset-4">
-      <Content />
-    </div>
-  </article>
-</Layout>
+<PostPage {...Astro.props} />
