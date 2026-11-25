@@ -22,8 +22,32 @@
 	--font-sans: var(--font-archivo);
 	--font-mono: var(--font-martian-mono);
 
+	--text-micro: 0.71875rem;
+	--text-micro--line-height: 1.55;
+	--text-caption: 0.8125rem;
+	--text-caption--line-height: 1.55;
+	--text-small: 0.90625rem;
+	--text-small--line-height: 1.55;
+	--text-body: 0.96875rem;
+	--text-body--line-height: 1.55;
+	--text-title: 1.03125rem;
+	--text-title--line-height: 1.55;
+	--text-lede: 1.1875rem;
+	--text-lede--line-height: 1.45;
+	--text-heading: 1.3125rem;
+	--text-heading--line-height: 1.1;
+	--text-figure: 1.4375rem;
+	--text-figure--line-height: 1.2;
+
+	--tracking-figure: -0.03em;
+
+	--container-lede: 24em;
+	--container-page: 48rem;
+
 	--breakpoint-xs: 35rem;
 }
+
+@custom-variant current-page (&[aria-current='page']);
 
 @utility heading {
 	font-family: var(--font-mono);
@@ -38,6 +62,19 @@
 	font-variant-numeric: tabular-nums;
 }
 
+/* Grid templates have no theme namespace, so each layout is a named utility. */
+@utility grid-cols-aside {
+	grid-template-columns: 1fr auto;
+}
+
+@utility grid-cols-facts {
+	grid-template-columns: 1.15fr repeat(3, 1fr);
+}
+
+@utility grid-cols-year {
+	grid-template-columns: 3.875rem 1fr;
+}
+
 @layer base {
 	html {
 		color-scheme: dark;
@@ -45,8 +82,8 @@
 	}
 
 	body {
-		font-size: 15.5px;
-		line-height: 1.55;
+		font-size: var(--text-body);
+		line-height: var(--text-body--line-height);
 	}
 
 	::selection {

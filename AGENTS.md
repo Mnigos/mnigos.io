@@ -46,6 +46,14 @@ Igor Makowski's personal site and blog: a static Astro 7 site with MDX posts, Ta
 - Comments are one line and only say a why the code cannot show, about four per file at most. No narration, no history, no comment that restates a signature. A comment directly above a module-level declaration is JSDoc (`/** ... */`), never `//`. (lint-enforced)
 - Run `bun run check:fix`; the `mnigos/*` rules in `tooling/oxlint-plugin` enforce the rest of the style.
 
+## Styling
+
+- No arbitrary Tailwind values or variants (`text-[13px]`, `gap-[9px]`, `aria-[current=page]:`). Use the theme in `src/styles/global.css`:
+  - the type scale `text-micro`, `text-caption`, `text-small`, `text-body`, `text-title`, `text-lede`, `text-heading`, `text-figure`, each with its own line height;
+  - the spacing scale, any multiple of 0.25 (`py-3.25` for 13px);
+  - `tracking-figure`, `max-w-lede`, `max-w-page`, the `grid-cols-aside`, `grid-cols-facts` and `grid-cols-year` utilities and the `current-page` variant.
+- When a value is missing, add a token or utility to `global.css` named by its role, not its number. Plain CSS declarations in `global.css` are fine. (enforced by `bun run check`)
+
 ## Writing
 
 Never use em dashes or en dashes anywhere in this repository, including code, comments, copy, commit messages and pull request text. End the sentence or use a comma instead. `bun run check` fails on either character in a tracked file.
