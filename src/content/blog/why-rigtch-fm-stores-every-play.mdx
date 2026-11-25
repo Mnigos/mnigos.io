@@ -49,8 +49,8 @@ new ones. This is the cron expression from the first commit:
 
 ```ts
 new CronJob(
-  `* ${delayMinutes * this.DELAY_MINUTES || '*'} ${this.INTERVAL_HOURS} * * *`,
-  () => this.triggerFetchingUserHistory(user)
+	`* ${delayMinutes * this.DELAY_MINUTES || '*'} ${this.INTERVAL_HOURS} * * *`,
+	() => this.triggerFetchingUserHistory(user)
 )
 ```
 
