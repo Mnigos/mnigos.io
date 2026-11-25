@@ -1,0 +1,31 @@
+---
+import { type CollectionEntry, render } from 'astro:content'
+import Layout from '../../site/presentation/layout.astro'
+import { formatPostDate } from '../domain/post.helper'
+
+interface Props {
+  post: CollectionEntry<'blog'>
+}
+
+const { post } = Astro.props
+const { Content } = await render(post)
+---
+
+<Layout title={`${post.data.title} · mnigos`} description={post.data.description}>
+  <article>
+    <header>
+      <h1 class="heading text-2xl">
+        {post.data.title}
+      </h1>
+      <time
+        datetime={post.data.publishedAt.toISOString()}
+        class="numeric mt-2 block text-sm text-dim"
+      >
+        {formatPostDate(post.data.publishedAt, 'long')}
+      </time>
+    </header>
+    <div class="prose mt-8 prose-headings:heading prose-a:decoration-accent prose-a:decoration-2 prose-a:underline-offset-4">
+      <Content />
+    </div>
+  </article>
+</Layout>
