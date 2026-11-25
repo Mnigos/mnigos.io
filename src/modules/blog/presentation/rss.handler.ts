@@ -1,8 +1,9 @@
 import rss from '@astrojs/rss'
+import { sortNewestFirst } from '../domain/post.helper'
 import { getPublishedPosts } from '../infrastructure/posts.query'
 
 export async function GET() {
-	const posts = await getPublishedPosts()
+	const posts = sortNewestFirst(await getPublishedPosts())
 
 	return await rss({
 		title: 'mnigos.io',

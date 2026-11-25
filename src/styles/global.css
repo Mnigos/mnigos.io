@@ -1,10 +1,10 @@
 @import 'tailwindcss' source('..');
-@plugin "@tailwindcss/typography";
 
 @theme {
 	--color-*: initial;
 	--color-bg: #0a0a0b;
 	--color-cell: #171615;
+	--color-code: #111110;
 	--color-ink: #ece8df;
 	--color-body: #d6d2c8;
 	--color-dim: #aaa59b;
@@ -46,8 +46,12 @@
 	--text-page-title--line-height: 2rem;
 	--text-headline: 1.6875rem;
 	--text-headline--line-height: 1.1;
+	--text-post-title-compact: 1.875rem;
+	--text-post-title-compact--line-height: 1.08;
 	--text-display: 2.25rem;
 	--text-display--line-height: 1;
+	--text-post-title: 2.375rem;
+	--text-post-title--line-height: 1.08;
 	--text-display-lg: 2.75rem;
 	--text-display-lg--line-height: 1;
 
@@ -59,6 +63,7 @@
 	--container-intro: 34em;
 	--container-measure: 36em;
 	--container-page: 48rem;
+	--container-post-title: 15em;
 
 	--breakpoint-xs: 35rem;
 }
@@ -134,22 +139,144 @@
 }
 
 .prose {
-	--tw-prose-body: var(--color-body);
-	--tw-prose-headings: var(--color-ink);
-	--tw-prose-lead: var(--color-dim);
-	--tw-prose-links: var(--color-ink);
-	--tw-prose-bold: var(--color-ink);
-	--tw-prose-counters: var(--color-dim);
-	--tw-prose-bullets: var(--color-accent);
-	--tw-prose-hr: var(--color-line);
-	--tw-prose-quotes: var(--color-dim);
-	--tw-prose-quote-borders: var(--color-accent);
-	--tw-prose-captions: var(--color-faint);
-	--tw-prose-kbd: var(--color-ink);
-	--tw-prose-kbd-shadows: var(--color-line-strong);
-	--tw-prose-code: var(--color-ink);
-	--tw-prose-pre-code: var(--color-ink);
-	--tw-prose-pre-bg: var(--color-cell);
-	--tw-prose-th-borders: var(--color-line);
-	--tw-prose-td-borders: var(--color-line);
+	max-width: 34em;
+	padding-top: 28px;
+	font-size: 17.5px;
+	line-height: 1.68;
+	color: var(--color-body);
+
+	@variant max-xs {
+		font-size: 16.5px;
+	}
+
+	& > * + *,
+	& blockquote > * + * {
+		margin-top: 1.15em;
+	}
+
+	& > p:first-child {
+		font-size: 20px;
+		line-height: 1.5;
+		color: var(--color-ink);
+	}
+
+	& :is(h2, h3) {
+		font-family: var(--font-mono);
+		font-weight: 800;
+		font-stretch: 75%;
+		letter-spacing: -0.04em;
+		color: var(--color-ink);
+		margin-top: 1.9em;
+	}
+
+	& h2 {
+		font-size: 24px;
+		line-height: 1.15;
+	}
+
+	& h3 {
+		font-size: 19px;
+		line-height: 1.2;
+	}
+
+	& :is(h2, h3) + * {
+		margin-top: 0.7em;
+	}
+
+	& a {
+		color: var(--color-ink);
+		text-decoration: underline 2px var(--color-accent);
+		text-underline-offset: 4px;
+
+		&:hover {
+			color: var(--color-accent);
+		}
+	}
+
+	& strong {
+		color: var(--color-ink);
+		font-weight: 700;
+	}
+
+	& code {
+		font-family: var(--font-mono);
+		font-stretch: 87.5%;
+		font-size: 0.8em;
+		background: var(--color-cell);
+		padding: 2px 6px;
+		color: var(--color-ink);
+	}
+
+	& pre {
+		font-family: var(--font-mono);
+		font-stretch: 87.5%;
+		font-size: 13px;
+		line-height: 1.75;
+		border: 1px solid var(--color-line);
+		padding: 16px 18px;
+
+		& code {
+			background: none;
+			padding: 0;
+			font-size: inherit;
+		}
+	}
+
+	& :is(ul, ol) {
+		display: grid;
+		gap: 0.45em;
+	}
+
+	& ul > li {
+		position: relative;
+		padding-left: 20px;
+
+		&::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 0.68em;
+			width: 6px;
+			height: 6px;
+			background: var(--color-accent);
+		}
+	}
+
+	& ol {
+		list-style: decimal;
+		padding-left: 1.4em;
+
+		& > li::marker {
+			color: var(--color-dim);
+		}
+	}
+
+	& blockquote {
+		border-left: 3px solid var(--color-accent);
+		padding: 2px 0 2px 18px;
+		font-size: 16px;
+		color: var(--color-dim);
+	}
+
+	& table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 15.5px;
+	}
+
+	& :is(th, td) {
+		border-bottom: 1px solid var(--color-line);
+		padding: 8px 16px 8px 0;
+		text-align: left;
+		vertical-align: top;
+	}
+
+	& th {
+		color: var(--color-ink);
+		font-weight: 600;
+	}
+
+	& hr {
+		border-top: 1px solid var(--color-line);
+	}
 }

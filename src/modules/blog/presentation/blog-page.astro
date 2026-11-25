@@ -1,35 +1,39 @@
 ---
 import Layout from '../../site/presentation/layout.astro'
-import { formatPostDate, sortNewestFirst } from '../domain/post.helper'
+import { formatIsoDate, sortNewestFirst } from '../domain/post.helper'
 import { getPublishedPosts } from '../infrastructure/posts.query'
 
 const posts = sortNewestFirst(await getPublishedPosts())
 ---
 
 <Layout title="Blog · mnigos" description="Writing about software engineering.">
-  <h1 class="heading text-page-title">
+  <h1 class="heading border-b-2 border-ink pb-3 text-heading">
     Blog
   </h1>
-  <ul class="mt-8 space-y-8">
+  <ul>
     {
-      posts.map(post => (
-        <li>
-          <a href={`/blog/${post.id}`} class="group block">
-            <h2 class="font-semibold group-hover:text-accent">
-              {post.data.title}
-            </h2>
-            <p class="mt-1 text-small/5 text-dim">
-              {post.data.description}
-            </p>
-            <time
-              datetime={post.data.publishedAt.toISOString()}
-              class="numeric mt-1 block text-small/5 text-dim"
+      posts.map(post => {
+        const date = formatIsoDate(post.data.publishedAt)
+
+        return (
+          <li class="border-b border-line">
+            <a
+              href={`/blog/${post.id}`}
+              class="group grid items-baseline gap-x-5 gap-y-1 py-3.25 xs:grid-cols-aside"
             >
-              {formatPostDate(post.data.publishedAt, 'short')}
-            </time>
-          </a>
-        </li>
-      ))
+              <span class="text-title font-semibold group-hover:text-accent">
+                {post.data.title}
+                <small class="mt-px block text-small font-normal text-dim">
+                  {post.data.description}
+                </small>
+              </span>
+              <time datetime={date} class="numeric text-caption/5.25 whitespace-nowrap text-dim xs:text-right">
+                {date}
+              </time>
+            </a>
+          </li>
+        )
+      })
     }
   </ul>
 </Layout>
