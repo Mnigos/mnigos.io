@@ -4,8 +4,39 @@ import { profileSchema, type Profile } from './profile.schemas'
 
 describe('profileSchema', () => {
 	test('accepts PROFILE', () => {
-		expect(profileSchema.safeParse(PROFILE).success).toBe(true)
+		const result = profileSchema.safeParse(PROFILE)
+
+		expect(result.success).toBe(true)
+		expect(result.data?.work).toStrictEqual(PROFILE.work)
 	})
+
+	test('rejects missing work', () => {
+		const profile = structuredClone(PROFILE)
+		Reflect.deleteProperty(profile, 'work')
+
+		const result = profileSchema.safeParse(profile)
+
+		expect(result.success).toBe(false)
+		expect(result.error?.issues.map(issue => issue.path)).toContainEqual([
+			'work',
+		])
+	})
+
+	test.each(['intro', 'weeklyStripLegend'] as const)(
+		'rejects missing work.%s',
+		field => {
+			const profile = structuredClone(PROFILE)
+			Reflect.deleteProperty(profile.work, field)
+
+			const result = profileSchema.safeParse(profile)
+
+			expect(result.success).toBe(false)
+			expect(result.error?.issues.map(issue => issue.path)).toContainEqual([
+				'work',
+				field,
+			])
+		}
+	)
 
 	test('rejects a missing source', () => {
 		const profile = structuredClone(PROFILE)
@@ -144,6 +175,20 @@ describe('profileSchema', () => {
 				profile.name = ''
 			},
 			path: ['name'],
+		},
+		{
+			name: 'work intro',
+			mutate: profile => {
+				profile.work.intro = ''
+			},
+			path: ['work', 'intro'],
+		},
+		{
+			name: 'work weekly strip legend',
+			mutate: profile => {
+				profile.work.weeklyStripLegend = ''
+			},
+			path: ['work', 'weeklyStripLegend'],
 		},
 		{
 			name: 'job role',
