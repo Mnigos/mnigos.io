@@ -95,13 +95,17 @@
 	letter-spacing: -0.045em;
 }
 
-@utility inline-link {
-	color: var(--color-ink);
-	padding-bottom: calc(var(--spacing) * 2);
-	box-decoration-break: clone;
+@utility link-stroke {
 	/* An image cannot read CSS variables, so link-stroke.svg repeats --color-accent; a spec keeps them equal. */
 	background: url('./link-stroke.svg') left bottom / 100%
 		calc(var(--spacing) * 2.25) no-repeat;
+}
+
+@utility inline-link {
+	@apply link-stroke;
+	color: var(--color-ink);
+	padding-bottom: calc(var(--spacing) * 2);
+	box-decoration-break: clone;
 
 	&:hover {
 		color: var(--color-accent);
@@ -138,6 +142,14 @@
 
 @utility grid-cols-stack {
 	grid-template-columns: 11.875rem 1fr;
+}
+
+@utility grid-cols-screenshots {
+	grid-template-columns: 1.6fr 1fr 1fr;
+}
+
+@utility grid-cols-label {
+	grid-template-columns: 6rem 1fr;
 }
 
 @utility bullet {
