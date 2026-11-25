@@ -5,7 +5,7 @@ Personal portfolio and blog. Built with [Astro](https://astro.build), Tailwind C
 ## Stack
 
 - Astro 7 for static site generation and content collections
-- Tailwind CSS 4 for styling, with `@tailwindcss/typography` for post content
+- Tailwind CSS 4 for styling; post content and code colours come from the site tokens in `src/styles/global.css`
 - MDX for blog posts, which live in `src/content/blog/`
 - Bun as package manager and runtime
 

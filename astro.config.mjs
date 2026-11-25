@@ -4,6 +4,7 @@ import { defineConfig, fontProviders } from 'astro/config'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 import tailwindcss from '@tailwindcss/vite'
+import { codeTheme } from './src/modules/blog/presentation/code-theme.config'
 
 // https://astro.build/config
 export default defineConfig({
@@ -34,6 +35,10 @@ export default defineConfig({
 			options: { experimental: { variableAxis: { wdth: [['75', '112.5']] } } },
 		},
 	],
+
+	markdown: {
+		shikiConfig: { theme: codeTheme },
+	},
 
 	integrations: [mdx(), sitemap()],
 })

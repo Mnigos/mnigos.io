@@ -1,31 +1,58 @@
 ---
 import { type CollectionEntry, render } from 'astro:content'
 import Layout from '../../site/presentation/layout.astro'
-import { formatPostDate } from '../domain/post.helper'
+import { formatIsoDate, getReadingMinutes } from '../domain/post.helper'
+
+type Post = CollectionEntry<'blog'>
 
 interface Props {
-  post: CollectionEntry<'blog'>
+  post: Post
+  previous: Post | undefined
+  next: Post | undefined
 }
 
-const { post } = Astro.props
+const { post, previous, next } = Astro.props
 const { Content } = await render(post)
+const [tag] = post.data.tags
+const date = formatIsoDate(post.data.publishedAt)
+
+const neighbours = [
+  previous && { label: 'Previous', post: previous, class: '' },
+  next && { label: 'Next', post: next, class: 'xs:col-start-2 xs:text-right' },
+].filter(neighbour => neighbour !== undefined)
 ---
 
 <Layout title={`${post.data.title} · mnigos`} description={post.data.description}>
-  <article>
-    <header>
-      <h1 class="heading text-page-title">
+  <article class="-mt-8">
+    <header class="border-b-2 border-ink pt-8.5 pb-6.5">
+      <div class="numeric text-caption text-dim">
+        <a href="/blog" class="hover:text-accent">Blog</a>
+        {tag && ` / ${tag}`}
+      </div>
+      <h1 class="heading mt-3.5 max-w-post-title text-post-title-compact xs:text-post-title">
         {post.data.title}
       </h1>
-      <time
-        datetime={post.data.publishedAt.toISOString()}
-        class="numeric mt-2 block text-small/5 text-dim"
-      >
-        {formatPostDate(post.data.publishedAt, 'long')}
-      </time>
+      <div class="numeric mt-4.5 flex flex-wrap gap-x-4.5 gap-y-1.5 text-caption text-dim">
+        <time datetime={date}>{date}</time>
+        <span>{getReadingMinutes(post.body ?? '')} min read</span>
+      </div>
     </header>
-    <div class="prose mt-8 prose-headings:heading prose-a:decoration-accent prose-a:decoration-2 prose-a:underline-offset-4">
+    <div class="prose">
       <Content />
     </div>
+    {
+      neighbours.length > 0 && (
+        <footer class="mt-11.5 grid gap-5 border-t-2 border-ink pt-4.5 xs:grid-cols-2">
+          {neighbours.map(neighbour => (
+            <a href={`/blog/${neighbour.post.id}`} class:list={['group block', neighbour.class]}>
+              <small class="block text-caption text-dim">{neighbour.label}</small>
+              <b class="text-title font-semibold group-hover:text-accent">
+                {neighbour.post.data.title}
+              </b>
+            </a>
+          ))}
+        </footer>
+      )
+    }
   </article>
 </Layout>
