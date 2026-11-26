@@ -5,6 +5,7 @@ import { getPublishedPosts } from '../../blog/infrastructure/posts.query'
 import { PROFILE } from '../../profile/content/profile.content'
 import { RIGTCH_PAGE } from '../../rigtch/content/rigtch-page.content'
 import { HOME_PAGE } from '../../site/content/home-page.content'
+import { USES_PAGE } from '../../uses/content/uses-page.content'
 import { WORK_PAGE } from '../../work/content/work-page.content'
 import { loadRecentWeekLevels } from '../infrastructure/recent-contributions.query'
 import { getStaticPaths } from './preview-image.handler'
@@ -57,7 +58,7 @@ afterEach(() => {
 })
 
 describe('preview image getStaticPaths', () => {
-	it('generates the four page images when there are no published posts', async () => {
+	it('generates the five page images when there are no published posts', async () => {
 		vi.mocked(getPublishedPosts).mockResolvedValue([])
 
 		expect(await getStaticPaths()).toStrictEqual([
@@ -95,6 +96,14 @@ describe('preview image getStaticPaths', () => {
 					description: BLOG_PAGE.description,
 				},
 			},
+			{
+				params: { slug: 'uses' },
+				props: {
+					path: '/uses',
+					title: USES_PAGE.heading,
+					description: USES_PAGE.description,
+				},
+			},
 		])
 		expect(getPublishedPosts).toHaveBeenCalledExactlyOnceWith()
 		expect(loadRecentWeekLevels).toHaveBeenCalledExactlyOnceWith('2026-11-25')
@@ -114,8 +123,8 @@ describe('preview image getStaticPaths', () => {
 		])
 		const paths = await getStaticPaths()
 
-		expect(paths).toHaveLength(6)
-		expect(paths.slice(4)).toStrictEqual([
+		expect(paths).toHaveLength(7)
+		expect(paths.slice(5)).toStrictEqual([
 			{
 				params: { slug: 'blog/first-post' },
 				props: {
@@ -135,7 +144,7 @@ describe('preview image getStaticPaths', () => {
 				},
 			},
 		])
-		expect(new Set(paths.map(({ params }) => params.slug)).size).toBe(6)
+		expect(new Set(paths.map(({ params }) => params.slug)).size).toBe(7)
 	})
 
 	it.each([
@@ -151,7 +160,7 @@ describe('preview image getStaticPaths', () => {
 			])
 			const paths = await getStaticPaths()
 
-			expect(paths[4].props).toStrictEqual({
+			expect(paths[5].props).toStrictEqual({
 				path: '/blog',
 				title: 'Post',
 				description: 'Fixture post description.',
@@ -170,7 +179,7 @@ describe('preview image getStaticPaths', () => {
 		const paths = await getStaticPaths()
 
 		expect(loadRecentWeekLevels).toHaveBeenCalledExactlyOnceWith('2026-11-26')
-		expect(paths[4].props.footer).toBe(
+		expect(paths[5].props.footer).toBe(
 			`2024-03-01 · 1 ${BLOG_PAGE.readingTime}`
 		)
 	})
