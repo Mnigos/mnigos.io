@@ -1,0 +1,10 @@
+---
+import type { LinkedText } from '../domain/uses.schemas'
+
+type Props = LinkedText
+
+const { text, link } = Astro.props
+const [before, after] = link ? text.split(link.label) : [text]
+---
+
+{before}{link && <a href={link.url} class="inline-link">{link.label}</a>}{after}

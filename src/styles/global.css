@@ -164,7 +164,7 @@
 }
 
 @utility grid-cols-label {
-	grid-template-columns: 6rem 1fr;
+	grid-template-columns: minmax(6rem, max-content) 1fr;
 }
 
 @utility bullet {

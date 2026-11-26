@@ -12,6 +12,7 @@ import { formatMonth } from '../../profile/domain/profile-format.helper'
 import ProductFacts from '../../profile/presentation/product-facts.astro'
 import Layout from '../../site/presentation/layout.astro'
 import { RIGTCH_PAGE } from '../content/rigtch-page.content'
+import LabelList from './label-list.astro'
 import OpenProductButton from './open-product-button.astro'
 import RigtchSection from './rigtch-section.astro'
 import Screenshot from './screenshot.astro'
@@ -92,16 +93,16 @@ const today = new Date().toISOString().slice(0, 10)
 
   <div class="grid gap-x-9 xs:grid-cols-2">
     <RigtchSection heading={stack.heading}>
-      <dl class="grid grid-cols-label">
+      <LabelList>
         {
           stack.rows.map(({ label, value }) => (
             <>
-              <dt class:list={[row, 'pt-2.25 pb-2 text-dim']}>{label}</dt>
-              <dd class:list={[row, 'pt-2.25 pb-2']}>{value}</dd>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
             </>
           ))
         }
-      </dl>
+      </LabelList>
     </RigtchSection>
 
     <RigtchSection heading={RIGTCH_PAGE.posts.heading}>
