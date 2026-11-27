@@ -244,6 +244,7 @@ export const PROFILE = profileSchema.parse({
 						'Tenset',
 					],
 				},
+				{ technology: 'Neon', usedAt: ['Ludus AI', 'own projects'] },
 				{ technology: 'Drizzle', usedAt: ['rigtch.fm', 'Ludus AI'] },
 				{
 					technology: 'Prisma',

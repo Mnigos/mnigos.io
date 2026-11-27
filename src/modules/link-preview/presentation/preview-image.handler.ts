@@ -7,6 +7,7 @@ import { getPublishedPosts } from '../../blog/infrastructure/posts.query'
 import { PROFILE } from '../../profile/content/profile.content'
 import { RIGTCH_PAGE } from '../../rigtch/content/rigtch-page.content'
 import { HOME_PAGE } from '../../site/content/home-page.content'
+import { USES_PAGE } from '../../uses/content/uses-page.content'
 import { WORK_PAGE } from '../../work/content/work-page.content'
 import { PREVIEW_IMAGE } from '../domain/preview-image.constants'
 import { fitPreviewTitle } from '../domain/preview-title.helper'
@@ -59,6 +60,12 @@ export async function getStaticPaths() {
 			path: '/blog',
 			title: BLOG_PAGE.heading,
 			description: BLOG_PAGE.description,
+		},
+		{
+			slug: 'uses',
+			path: '/uses',
+			title: USES_PAGE.heading,
+			description: USES_PAGE.description,
 		},
 		...posts.map(({ id, body, data }) => ({
 			slug: `blog/${id}`,

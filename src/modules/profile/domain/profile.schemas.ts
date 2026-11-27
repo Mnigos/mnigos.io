@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
-const textSchema = z.string().min(1)
+export const textSchema = z.string().min(1)
+export const pathSchema = z.string().regex(/^\/(?![/\\])/u)
 const linkSchema = z.object({ label: textSchema, url: z.url() })
 
 const factFields = {
@@ -92,10 +93,7 @@ export const profileSchema = z.object({
 	intro: textSchema,
 	links: z.array(
 		linkSchema.extend({
-			url: z.union([
-				z.url({ protocol: /^https$/u }),
-				z.string().regex(/^\/(?![/\\])/u),
-			]),
+			url: z.union([z.url({ protocol: /^https$/u }), pathSchema]),
 		})
 	),
 	product: productSchema,

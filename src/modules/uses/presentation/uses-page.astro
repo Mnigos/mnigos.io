@@ -1,0 +1,77 @@
+---
+import LabelList from '../../rigtch/presentation/label-list.astro'
+import RigtchSection from '../../rigtch/presentation/rigtch-section.astro'
+import Layout from '../../site/presentation/layout.astro'
+import DefinitionList from '../../work/presentation/definition-list.astro'
+import { USES_PAGE } from '../content/uses-page.content'
+import LinkedText from './linked-text.astro'
+
+const { defaults, agents, desk, gamingPc, music } = USES_PAGE
+const and = new Intl.ListFormat('en-GB')
+const or = new Intl.ListFormat('en-GB', { type: 'disjunction' })
+---
+
+<Layout title={USES_PAGE.title} description={USES_PAGE.description} image="/og/uses.png">
+  <div class="py-1.5">
+    <h1 class="heading text-display xs:text-display-lg">{USES_PAGE.heading}</h1>
+    <p class="mt-3.5 max-w-intro text-copy text-dim">{USES_PAGE.lede}</p>
+  </div>
+
+  {
+    [defaults, agents, desk, gamingPc, music].map(section => (
+      <RigtchSection heading={section.heading}>
+        {'rows' in section ? (
+          <>
+            {section.intro && (
+              <p class="mb-2 max-w-measure text-dim">
+                <LinkedText {...section.intro} />
+              </p>
+            )}
+            <LabelList>
+              {section.rows.map(({ label, items, note }) => (
+                <>
+                  <dt>{label}</dt>
+                  <dd class="font-semibold text-ink">
+                    {items.map(({ names, on }, index) => (
+                      <>
+                        {index > 0 && ', '}
+                        {and.format(names)}
+                        {on.length > 0 && <span class="font-normal text-dim"> on {or.format(on)}</span>}
+                      </>
+                    ))}
+                    {note && <span class="font-normal text-dim"> {note}</span>}
+                  </dd>
+                </>
+              ))}
+            </LabelList>
+          </>
+        ) : (
+          <DefinitionList>
+            {section.entries.map(({ tools, note, ...text }) => (
+              <>
+                <dt>
+                  {tools.map(({ name, url }, index) => (
+                    <>
+                      {index > 0 && ', '}
+                      {url ? (
+                        <a href={url} target="_blank" rel="noreferrer" class="hover:text-accent">
+                          {name}
+                        </a>
+                      ) : (
+                        name
+                      )}
+                    </>
+                  ))}
+                </dt>
+                <dd>
+                  <LinkedText {...text} />
+                  {note && <span class="text-dim"> {note}</span>}
+                </dd>
+              </>
+            ))}
+          </DefinitionList>
+        )}
+      </RigtchSection>
+    ))
+  }
+</Layout>
