@@ -27,3 +27,9 @@ pnpm-debug.log*
 
 # design mockups and content drafts, local only
 mockups/
+
+# third-party agent skills, restored from skills-lock.json with `bunx skills experimental_install`
+.agents/skills/
+.claude/skills
+# impeccable settings for one machine only
+.impeccable/config.local.json

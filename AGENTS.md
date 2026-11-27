@@ -1,6 +1,6 @@
 # mnigos.io agent rules
 
-Igor Makowski's personal site and blog: a static Astro 7 site with MDX posts, Tailwind 4 and Bun, one package at the repository root; oxlint and oxfmt through Ultracite, Vitest for unit tests. Map: `ARCHITECTURE.md`. Decisions: `docs/decisions`.
+Igor Makowski's personal site and blog: a static Astro 7 site with MDX posts, Tailwind 4 and Bun, one package at the repository root; oxlint and oxfmt through Ultracite, Vitest for unit tests. Map: `ARCHITECTURE.md`. Decisions: `docs/decisions`. Design context for UI work: `PRODUCT.md` (who the site is for) and `DESIGN.md` (the approved look), read by the impeccable skill, which `bunx skills experimental_install` restores from `skills-lock.json` into `.agents/skills/`.
 
 ## Must
 
